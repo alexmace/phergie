@@ -29,11 +29,25 @@ Phergie_Autoload::registerAutoloader();
 $bot = new Phergie_Bot;
 
 if ($argc > 0) {
-    $config = new Phergie_Config;
+
     foreach ($argv as $file) {
-        $config->read($file);
+
+		// Check to make sure Phergie won't try and include this file again
+		if (strpos($file, 'phergie.php') === false) {
+
+			// Check to see if an instance of Phergie_Config has been created
+			// yet. We only create one when a valid file has been found to stop
+			// use ending up with an empty config object.
+			if (!isset($config)) {
+				$config = new Phergie_Config;
+			}
+			$config->read($file);
+		}
     }
-    $bot->setConfig($config);
+
+	if (isset($config)) {
+		$bot->setConfig($config);
+	}
 }
 
 $bot->run();
