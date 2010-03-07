@@ -28,26 +28,27 @@ Phergie_Autoload::registerAutoloader();
 
 $bot = new Phergie_Bot;
 
-if ($argc > 0) {
-
-    foreach ($argv as $file) {
-
-		// Check to make sure Phergie won't try and include this file again
-		if (strpos($file, 'phergie.php') === false) {
-
-			// Check to see if an instance of Phergie_Config has been created
-			// yet. We only create one when a valid file has been found to stop
-			// use ending up with an empty config object.
-			if (!isset($config)) {
-				$config = new Phergie_Config;
-			}
-			$config->read($file);
-		}
+if (!isset($argc)) {
+    echo
+        'The PHP setting register_argc_argv must be enabled for Phergie ', 
+        'configuration files to be specified using command line arguments; ',
+        'defaulting to Settings.php in the current working directory',
+        PHP_EOL;
+} else if ($argc > 0) {
+    // Skip the current file for manual installations
+    // ex: php phergie.php Settings.php
+    if (realpath($argv[0]) == __FILE__) {
+        array_shift($argv);
     }
 
-	if (isset($config)) {
-		$bot->setConfig($config);
-	}
+    // If configuration files were specified, override default behavior
+    if (count($argv) > 0) {
+        $config = new Phergie_Config;
+        foreach ($argv as $file) {
+            $config->read($file);
+        }
+        $bot->setConfig($config);
+    }
 }
 
 $bot->run();

@@ -12,18 +12,18 @@
  * http://phergie.org/license
  *
  * @category  Phergie 
- * @package   Phergie_Core
+ * @package   Phergie_Plugin_Twitter
  * @author    Phergie Development Team <team@phergie.org>
  * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
- * @link      http://pear.phergie.org/package/Phergie_Core
+ * @link      http://pear.phergie.org/package/Phergie_Plugin_Twitter
  */
 
 /**
  * These requires are for library code, so they don't fit Autoload's normal 
  * conventions.
  *
- * @see http://github.com/scoates/simpletweet
+ * @link http://github.com/scoates/simpletweet
  */
 require dirname(__FILE__) . '/Twitter/twitter.class.php';
 require dirname(__FILE__) . '/Twitter/laconica.class.php';
@@ -44,10 +44,10 @@ require dirname(__FILE__) . '/Twitter/laconica.class.php';
  *    (same as `twitter 1234567`)
  *
  * @category Phergie
- * @package  Phergie_Core
+ * @package  Phergie_Plugin_Twitter
  * @author   Phergie Development Team <team@phergie.org>
  * @license  http://phergie.org/license New BSD License
- * @link     http://pear.phergie.org/package/Phergie_Core
+ * @link     http://pear.phergie.org/package/Phergie_Plugin_Twitter
  */
 class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 {
