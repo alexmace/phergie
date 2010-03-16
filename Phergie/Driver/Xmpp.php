@@ -354,10 +354,15 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 				break;
 
 			case 'presence':
+				unset($cmd);
 				break;
 
 			default:
 				break;
+		}
+
+		if (!isset($cmd)) {
+			return null;
 		}
 
 		$event = new Phergie_Event_Request;
