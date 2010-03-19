@@ -274,7 +274,10 @@ class Phergie_Bot
         foreach ($config['plugins'] as $name) {
             try {
                 $plugin = $plugins->addPlugin($name);
-                $plugin->onLoad();
+                $plugin
+                    ->setConfig($config)
+                    ->setEventHandler($events)
+                    ->onLoad();
                 $ui->onPluginLoad($name);
             } catch (Phergie_Plugin_Exception $e) {
                 $ui->onPluginFailure($name, $e->getMessage());
@@ -283,8 +286,6 @@ class Phergie_Bot
                 }
             }
         }
-        $plugins->setConfig($config);
-        $plugins->setEventHandler($events);
     }
 
     /**
@@ -321,61 +322,42 @@ class Phergie_Bot
         $driver = $this->getDriver();
         $plugins = $this->getPluginHandler();
         $connections = $this->getConnectionHandler();
+        $events = $this->getEventHandler();
         $ui = $this->getUi();
 
-        $plugins->onTick();
-        
         foreach ($connections as $connection) {
             $driver->setConnection($connection);
-            if (!($event = $driver->getEvent())) {
-                $this->processEventQueue($connection);
-                continue;
+            $plugins->setConnection($connection)->onTick();
+
+            if ($event = $driver->getEvent()) {
+                $ui->onEvent($event, $connection);
+
+                $plugins
+                    ->setEvent($event)
+                    ->preEvent()
+                    ->{'on' . ucfirst($event->getType())}();
             }
-            $ui->onEvent($event, $connection);
 
-            $plugins
-                ->setConnection($connection)
-                ->setEvent($event)
-                ->preEvent()
-                ->{'on' . ucfirst($event->getType())}();
+            if (count($events)) {
+                $plugins->preDispatch();
+                foreach ($events as $event) {
+                    $ui->onCommand($event, $connection);
 
-
-            $this->processEventQueue($connection);
-        }
-    }
-
-    /**
-     * Processes events that have been added to the event handler
-     * 
-     * @param Phergie_Connection $connection 
-     * 
-     * @return void
-     */
-    protected function processEventQueue(Phergie_Connection $connection)
-    {
-        $events = $this->getEventHandler();
-        if (count($events) > 0) {
-            $driver = $this->getDriver();
-            $plugins = $this->getPluginHandler();
-            $ui = $this->getUi();
-
-            $plugins->setConnection($connection)->preDispatch();
-
-            foreach ($events as $event) {
-                $ui->onCommand($event, $connection);
-                $method = 'do' . ucfirst(strtolower($event->getType()));
-                call_user_func_array(
+                    $method = 'do' . ucfirst(strtolower($event->getType()));
+                    call_user_func_array(
                         array($driver, $method),
                         $event->getArguments()
-                );
-            }
-            $plugins->postDispatch();
+                    );
+                }
+                $plugins->postDispatch();
 
-            if ($events->hasEventOfType(Phergie_Event_Request::TYPE_QUIT)) {
-                $ui->onQuit($connection);
-                $this->getConnectionHandler()->removeConnection($connection);
+                if ($events->hasEventOfType(Phergie_Event_Request::TYPE_QUIT)) {
+                    $ui->onQuit($connection);
+                    $connections->removeConnection($connection);
+                }
+
+                $events->clearEvents();
             }
-            $events->clearEvents();
         }
     }
 
