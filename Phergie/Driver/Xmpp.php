@@ -246,6 +246,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doPrivmsg($target, $text)
     {
+		$this->xmpp->message($target, $text);
     }
 
     /**
@@ -365,9 +366,12 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			return null;
 		}
 
+		$hostmask = Phergie_Hostmask_Xmpp::fromString($from);
+
 		$event = new Phergie_Event_Request;
 		$event->setType($cmd)
-			  ->setArguments($args);
+			  ->setArguments($args)
+			  ->setHostmask($hostmask);
         return $event;
 
 	}

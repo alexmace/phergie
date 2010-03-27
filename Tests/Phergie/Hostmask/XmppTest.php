@@ -42,9 +42,8 @@ class Phergie_Hostmask_XmppTest extends PHPUnit_Framework_TestCase
 
 		// Test that the host mask contains the expected information
 		$this->assertAttributeSame('realm.server.com', 'host', $hostmask);
-		$this->assertAttributeSame('nick', 'nick', $hostmask);
-		$this->assertAttributeSame(
-			'nick@realm.server.com', 'username', $hostmask);
+		$this->assertAttributeSame('nick@realm.server.com', 'nick', $hostmask);
+		$this->assertAttributeSame('nick', 'username', $hostmask);
 
 	}
 
