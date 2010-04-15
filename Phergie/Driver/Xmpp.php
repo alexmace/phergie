@@ -35,263 +35,6 @@ require 'XMPP.php';*/
 class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 {
 
-    /**
-     * There isn't actually an XMPP equivilent to the IRC ACTION command, but
-	 * most clients with interpret a message starting "/me" in the same way,
-	 * so we'll just prepend that onto the text.
-     *
-     * @param string $target MUC name or user nick
-     * @param string $text   Text of the action to perform
-     *
-     * @return void
-     */
-    public function doAction($target, $text)
-    {
-    }
-
-    /**
-     * Initiates a connection with the server.
-     *
-     * @return void
-     */
-    public function doConnect()
-    {
-	}
-
-    /**
-     * There does not appear to be an XMPP equivilent for this command, so it
-	 * will be left unimplemented.
-     *
-     * @param string $nick User nick
-     * @param string $finger Finger string to send for a response
-     *
-     * @return void
-     */
-    public function doFinger($nick, $finger = null)
-    {
-    }
-
-    /**
-     * Invites a user to an invite-only MUC.
-     *
-     * @param string $nick Nick of the user to invite
-     * @param string $muc  Address of the multi-user chat.
-     *
-     * @return void
-     */
-    public function doInvite($nick, $muc)
-    { 
-    }
-
-    /**
-     * Joins a MUC.
-     *
-     * @param string $mucs Comma-delimited list of mucs to join
-     * @param string $keys Optional comma-delimited list of muc keys. Not in
-	 *                     use in this driver.
-     *
-     * @return void
-     */
-    public function doJoin($mucs, $keys = null)
-	{
-	}
-
-    /**
-     * Kicks a user from a MUC.
-     *
-     * @param string $nick   Nick of the user
-     * @param string $muc    MUC address
-     * @param string $reason Reason for the kick (optional)
-     *
-     * @return void
-     */
-    public function doKick($nick, $muc, $reason = null)
-    {
-    }
-
-    /**
-     * Obtains a list of MUCs available.
-     *
-     * @param string $mucs Comma-delimited list of one or more mucs to which
-	 *                     the response should be restricted (optional)
-     *
-     * @return void
-     */
-    public function doList($mucs = null)
-    {
-    }
-
-    /**
-     * Retrieves or changes a MUC or user mode.
-     *
-     * @param string $target MUC name or user nick
-     * @param string $mode   New mode to assign (optional)
-     *
-     * @return void
-     */
-    public function doMode($target, $mode = null)
-    {
-    }
-
-    /**
-     * Obtains a list of nicks of usrs in currently joined MUCs.
-     *
-     * @param string $mucs Comma-delimited list of one or more mucs
-     *
-     * @return void
-     */
-    public function doNames($mucs)
-    {
-    }
-
-    /**
-     * Changes the client nick.
-     *
-     * @param string $nick New nick to assign
-     *
-     * @return void
-     */
-    public function doNick($nick)
-    {
-	}
-
-    /**
-     * Sends a notice to a nick or MUC.
-     *
-     * @param string $target MUC name or user nick
-     * @param string $text   Text of the notice to send
-     *
-     * @return void
-     */
-    public function doNotice($target, $text)
-    {
-    }
-
-    /**
-     * Leaves a MUC.
-     *
-     * @param string $mucs Comma-delimited list of MUCs to leave
-     *
-     * @return void
-     */
-    public function doPart($mucs)
-    {
-    }
-
-    /**
-     * Sends a CTCP PING request or response (they are identical) to a user.
-     *
-     * @param string $nick User nick
-     * @param string $hash Hash to use in the handshake
-     *
-     * @return void
-     */
-    public function doPing($nick, $hash)
-    {
-    }
-
-    /**
-     * Responds to a server test of client responsiveness.
-     *
-     * @param string $daemon Daemon from which the original request originates
-     *
-     * @return void
-     */
-    public function doPong($daemon)
-    {
-    }
-
-    /**
-     * Sends a message to a nick or MUC.
-     *
-     * @param string $target MUC name or user nick
-     * @param string $text   Text of the message to send
-     *
-     * @return void
-     */
-    public function doPrivmsg($target, $text)
-    {
-    }
-
-    /**
-     * Terminates the connection with the server.
-     *
-     * @param string $reason Reason for connection termination (optional)
-     *
-     * @return void
-     */
-    public function doQuit($reason = null)
-    {
-	}
-
-    /**
-     * Sends a raw command to the server.
-     *
-     * @param string $command Command string to send
-     *
-     * @return void
-     */
-    public function doRaw($command)
-    {
-    }
-
-    /**
-     * Sends a CTCP TIME request to a user.
-     *
-     * @param string $nick User nick
-     * @param string $time Time string to send for a response
-     *
-     * @return void
-     */
-    public function doTime($nick, $time = null)
-    {
-    }
-
-    /**
-     * Retrieves or changes a muc topic.
-     *
-     * @param string $muc Name of the muc
-     * @param string $topic   New topic to assign (optional)
-     *
-     * @return void
-     */
-    public function doTopic($muc, $topic = null)
-    {
-    }
-
-    /**
-     * Sends a CTCP VERSION request or response to a user.
-     *
-     * @param string $nick User nick
-     * @param string $version Version string to send for a response
-     *
-     * @return void
-     */
-    public function doVersion($nick, $version = null)
-    {
-    }
-
-    /**
-     * Retrieves information about a nick.
-     *
-     * @param string $nick Nick
-     *
-     * @return void
-     */
-    public function doWhois($nick)
-    {
-    }
-
-    /**
-     * Listens for an event on the current connection.
-     *
-     * @return Phergie_Event_Interface|null Event instance if an event was
-     *         received, NULL otherwise
-     */
-    public function getEvent()
-    {
-	}
-
 }
 /*
 	protected $startTime;
@@ -466,7 +209,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 				 * @todo Implement a system to ignore jids
 				 */ /*
                 } elseif (!empty($cmd) && method_exists($plugin, $method)/* &&
-                          !preg_match($ignore, $event->getHostmask())*//*) {
+                          !preg_match($ignore, $event->getHostmask())*//)/* {
                     $plugin->{$method}();
                 }
             }
@@ -474,14 +217,59 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 	}
 
 	/**
-     * Sends a /me action to a nick or muc.
+     * Sends a /me action to a nick or channel.
      *
-     * @param string $target muc name or user nick
+     * @param string $target Channel name or user nick
      * @param string $text Text of the action to perform
      */
 /*	public function doAction($target, $text)
 	{
 		$this->xmpp->message($target, '/me ' . $text);
+	}
+
+	public function doInvite($nick, $channel)
+	{
+
+	}
+
+	public function doNames($channels)
+	{
+
+	}
+	
+	public function doJoin($channel, $key = null) 
+	{
+		
+	}
+
+	public function doKick($nick, $channel, $reason = null)
+	{
+	}
+
+	public function doList($channels = null)
+	{
+
+	}
+
+	public function doMode($target, $mode = null)
+	{
+	}
+
+	public function doNick($nick)
+	{
+	}
+
+	public function doNotice($target, $text)
+	{
+	}
+	
+	public function doPart($channel) 
+	{
+		
+	}
+
+	public function doPong($daemon)
+	{
 	}
 	
 	public function doPrivmsg($target, $text) 
@@ -489,6 +277,19 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 		$this->xmpp->message($target, $text);
 	}
 
+	public function doQuit($reason = null, $reconnect = false)
+	{
+
+	}
+
+	public function doTopic($channel, $topic = null)
+	{
+
+	}
+
+	public function doWhois($nick)
+	{
+	}
 	*/
     /**
      * Parses an XMPP JID in a similar manner to the way the IRC Hostmask is
