@@ -19,7 +19,8 @@
  * @link      http://pear.phergie.org/package/Phergie
  */
 
-require 'Xmpp/Connection.php';
+/*require 'XMPP/Message.php';
+require 'XMPP.php';*/
 
 /**
  * Driver that connects to an XMPP server rather than IRC, using an external
@@ -55,35 +56,6 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doConnect()
     {
-		// Listen for input indefinitely
-        set_time_limit(0);
-
-        // Get connection information
-        $connection = $this->getConnection();
-        $hostname = $connection->getHost();
-        $port = $connection->getPort();
-        $password = $connection->getPassword();
-        $username = $connection->getUsername();
-        $nick = $connection->getNick();
-        $realname = $connection->getRealname();
-        $transport = $connection->getTransport();
-
-		// Always default to SSL unless tcp is explicitly asked for.
-		if ($transport == 'tcp') {
-			$ssl = false;
-		} else {
-			$ssl = true;
-		}
-
-		$this->xmpp = new Xmpp_Connection(
-			$username, $password, $hostname, $ssl, Zend_Log::EMERG, $port,
-			'Bot');
-
-		$this->xmpp->connect();
-		$this->xmpp->authenticate();
-		$this->xmpp->bind();
-		$this->xmpp->establishSession();
-		$this->xmpp->presence();
 	}
 
     /**
