@@ -52,8 +52,8 @@ class Phergie_Hostmask_Xmpp extends Phergie_Hostmask
     public static function fromString($jid)
     {
         if (preg_match(self::$regex, $jid, $match)) {
-            list(, $username, $realm, $resource) = $match;
-			$nick = $username . '@' . $realm;
+            list(, $nick, $realm, $resource) = $match;
+			$username = $nick . '@' . $realm;
             return new self($nick, $username, $realm);
         }
 
