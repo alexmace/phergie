@@ -28,7 +28,7 @@
  * @license  http://phergie.org/license New BSD License
  * @link     http://pear.phergie.org/package/Phergie
  */
-class Phergie_Hostmask_Xmpp extends Phergie_Hostmask
+class Phergie_Hostmask_Xmpp
 {
 
     /**
@@ -36,31 +36,6 @@ class Phergie_Hostmask_Xmpp extends Phergie_Hostmask
      *
      * @var string
      */
-    protected static $regex = '/^([^@]+)@([^\/]+)\/(.*)/';
-
-    /**
-     * Parses a string containing the entire hostmask into a new instance of
-     * this class.
-     *
-     * @param string $jid Entire jid including the username, realm and resource
-     *					  components
-     *
-     * @return Phergie_Hostmask_Xmpp New instance populated with data parsed
-	 *								 from the provided hostmask string
-     * @throws Phergie_Hostmask_Exception
-     */
-    public static function fromString($jid)
-    {
-        if (preg_match(self::$regex, $jid, $match)) {
-            list(, $nick, $realm, $resource) = $match;
-			$username = $nick . '@' . $realm;
-            return new self($nick, $username, $realm);
-        }
-
-        throw new Phergie_Hostmask_Exception(
-            'Invalid hostmask specified: "' . $jid . '"',
-            Phergie_Hostmask_Exception::ERR_INVALID_HOSTMASK
-        );
-    }
+    protected static $regex = '/^([^!@]+)!(?:[ni]=)?([^@]+)@([^ ]+)/';
 
 }
