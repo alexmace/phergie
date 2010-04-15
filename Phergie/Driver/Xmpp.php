@@ -34,13 +34,6 @@ require 'Xmpp/Connection.php';
 class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 {
 
-	/**
-	 * Holds the connection to the XMPP server.
-	 * 
-	 * @var Xmpp_Connection 
-	 */
-	protected $xmpp;
-
     /**
      * There isn't actually an XMPP equivilent to the IRC ACTION command, but
 	 * most clients with interpret a message starting "/me" in the same way,
@@ -325,46 +318,6 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function getEvent()
     {
-		$tag = $this->xmpp->wait();
-
-		// If there is no tag that means we received nothing from the server and
-		// no event has occured.
-		if (empty($tag)) {
-            return null;
-        }
-
-		// Format the arguments as required for the command that was
-		// received
-		switch ($tag) {
-			case 'message':
-				$message = $this->xmpp->getMessage();
-				$from = $message->getFrom();
-				//$this->parseHostmask($from, $nick, $user, $host);
-				$cmd = 'privmsg';
-				$bodies = $message->getBodies();
-				/**
-				 * @todo There may be none or more than one body. Should
-				 *		 handle that situation.
-				 */
-				$args = array($from, $bodies[0]['content']);
-
-				// Prepend args with source of message so the plugins know
-				// who to send the response to.
-				// array_unshift($args, $from);
-				break;
-
-			case 'presence':
-				break;
-
-			default:
-				break;
-		}
-
-		$event = new Phergie_Event_Request;
-		$event->setType($cmd)
-			  ->setArguments($args);
-        return $event;
-
 	}
 
 }
@@ -387,7 +340,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
 /*    protected $queue;
 
-	
+	protected $xmpp;
 
     public function run()
 	{
