@@ -53,19 +53,46 @@ class Phergie_Plugin_Handler implements IteratorAggregate
     protected $autoload;
 
     /**
+     * Phergie_Config instance that should be passed in to any plugin
+     * instantiated within the handler
+     *
+     * @var Phergie_Config
+     */
+    protected $config;
+
+    /**
+     * Phergie_Event_Handler instance that should be passed in to any plugin
+     * instantiated within the handler
+     *
+     * @var Phergie_Event_Handler
+     */
+    protected $events;
+
+    /**
      * Constructor to initialize class properties and add the path for core 
      * plugins.
      *
+     * @param Phergie_Config        $config configuration to pass to any
+     *                                      instantiated plugin
+     * @param Phergie_Event_Handler $events event handler to pass to any
+     *                                      instantiated plugin
+     *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct(
+        Phergie_Config $config,
+        Phergie_Event_Handler $events
+    ) {
+        $this->config = $config;
+        $this->events = $events;
+
         $this->plugins = array();
         $this->paths = array();
         $this->autoload = false;
 
         $this->addPath(dirname(__FILE__), 'Phergie_Plugin_');
     }
+
 
     /**
      * Adds a path to search for plugin class files. Paths are searched in
@@ -165,6 +192,9 @@ class Phergie_Plugin_Handler implements IteratorAggregate
 
             // Configure and add the instance 
             $instance->setPluginHandler($this);
+            $instance->setConfig($this->config);
+            $instance->setEventHandler($this->events);
+            $instance->onLoad();
             $this->plugins[$index] = $instance;
             $plugin = $instance;
 
@@ -248,11 +278,7 @@ class Phergie_Plugin_Handler implements IteratorAggregate
         }
 
         // If autoloading is enabled, attempt to load the plugin
-        $this->addPlugin($name);
-        $plugin = $this->plugins[$lower];
-
-        // Execute the onLoad event handler for the added plugin
-        $plugin->onLoad();
+        $plugin = $this->addPlugin($name);
 
         // Return the added plugin
         return $plugin;
@@ -366,20 +392,21 @@ class Phergie_Plugin_Handler implements IteratorAggregate
     /**
      * Proxies method calls to all plugins containing the called method. An  
      * individual plugin may short-circuit this process by explicitly 
-     * returning false.
+     * returning FALSE.
      *
      * @param string $name Name of the method called
      * @param array  $args Arguments passed in the method call
      *
-     * @return Phergie_Plugin_Handler Provides a fluent interface 
+     * @return bool FALSE if a plugin short-circuits processing by returning 
+     *         FALSE, TRUE otherwise
      */
     public function __call($name, array $args)
     {
         foreach ($this->plugins as $plugin) {
             if (call_user_func_array(array($plugin, $name), $args) === false) {
-                break;
+                return false;
             }
         }
-        return $this;
+        return true;
     }
 }
