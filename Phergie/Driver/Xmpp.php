@@ -207,9 +207,9 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
                 // Skip events from ignored users and malformed packets
 				/**
 				 * @todo Implement a system to ignore jids
-				 */ /*
+				 */
                 } elseif (!empty($cmd) && method_exists($plugin, $method)/* &&
-                          !preg_match($ignore, $event->getHostmask())*//)/* {
+                          !preg_match($ignore, $event->getHostmask())*/) {
                     $plugin->{$method}();
                 }
             }
