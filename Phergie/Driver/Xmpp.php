@@ -129,6 +129,12 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doJoin($mucs, $keys = null)
 	{
+		// Explode the list on the comma and join all of the channels specified
+		$mucs = explode(',', $mucs);
+		
+		foreach ($mucs as $muc) {
+			$this->xmpp->join($muc, $this->getConnection()->getNick());
+		}
 	}
 
     /**
