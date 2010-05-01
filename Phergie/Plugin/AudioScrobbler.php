@@ -143,7 +143,7 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
         $response = $this->http->get($url);
         if ($response->isError()) {
             $this->doNotice(
-                $event->getSource(),
+                $event->getNick(),
                 'Can\'t find status for ' . $user . ': HTTP ' . 
                     $response->getCode() . ' ' . $response->getMessage()
             );
@@ -153,7 +153,7 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
         $xml = $response->getContent();
         if ($xml->error) {
             $this->doNotice(
-                $event->getSource(),
+                $event->getNick(),
                 'Can\'t find status for ' . $user . ': API ' . $xml->error
             );
             return false; 
@@ -164,11 +164,11 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
         
         // If the user exists, but has not scrobbled anything, the result will be empty.
         if (empty($track->name) && empty($track->artist)) {
-            $msg = sprintf(
-                'Can\'t find track information for %s',
-                $recenttracks['user']
+            $this->doNotice(
+                $event->getNick(),
+                'Can\'t find track information for ' . $recenttracks['user']
             );
-            return $msg;
+            return false;
         }
         
         $highlight = $this->getConfig('audioscrobbler.highlight', false);
