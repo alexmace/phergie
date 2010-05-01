@@ -652,6 +652,9 @@ class Phergie_Plugin_Url extends Phergie_Plugin_Abstract
 				$title = 'No Title';
 			}
 		}
+        
+        // Sanitise the title.
+        $title = Phergie_Plugin_Helper_String::cleanString($title);
 
 		return $title;
     }
