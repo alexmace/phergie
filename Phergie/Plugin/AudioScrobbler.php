@@ -25,6 +25,8 @@
  * "audioscrobbler.librefm_api_key": API key given by libre.fm (string).
  * "audioscrobbler.highlight":       Whether or not to highlight track and
  *                                   artist names in the output (boolean).
+ * "audioscrobbler.nick_binding":    Array of IRC nicks (key) to last.fm and 
+ *                                   libre.fm user names (value) (array).
  * 
  * @category Phergie
  * @package  Phergie_Plugin_AudioScrobbler
@@ -128,9 +130,16 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
     public function getScrobbled($user, $url, $key)
     {
         $event = $this->getEvent();
-        $user = $user ? $user : $event->getNick();
+        
+        // Handle nick-binding.
+        $nick_binding = $this->getConfig('audioscrobbler.nick_binding', null);
+        if ($user === null && !empty($nick_binding[$event->getNick()])) {
+            $user = $nick_binding[$event->getNick()];
+        } else {
+            $user = $user ? $user : $event->getNick();
+        }
+        
         $url = sprintf($url . $this->query, urlencode($user), urlencode($key));
-
         $response = $this->http->get($url);
         if ($response->isError()) {
             $this->doNotice(
