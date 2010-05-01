@@ -20,7 +20,12 @@
  */
 
 /**
- *
+ * Configuration settings:
+ * "audioscrobbler.lastfm_api_key":  API given by last.fm (string).
+ * "audioscrobbler.librefm_api_key": API key given by libre.fm (string).
+ * "audioscrobbler.highlight":       Whether or not to highlight track and
+ *                                   artist names in the output (boolean).
+ * 
  * @category Phergie
  * @package  Phergie_Plugin_AudioScrobbler
  * @author   Phergie Development Team <team@phergie.org>
@@ -158,15 +163,25 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
         }
         
         if (isset($track['nowplaying'])) {
+            $line = '%s is listening to %s by %s';
+            if ($this->config['audioscrobbler.highlight']) {
+                $line = '%s is listening to %s by %s';
+            }
+            
             $msg = sprintf(
-                '%s is listening to %s by %s',
+                $line,
                 $recenttracks['user'],
                 $track->name,
                 $track->artist
             );
         } else {
+            $line = '%s, %s was listening to %s by %s';
+            if ($this->config['audioscrobbler.highlight']) {
+                $line = '%s, %s was listening to %s by %s';
+            }
+            
             $msg = sprintf(
-                '%s, %s was listening to %s by %s',
+                $line,
                 $track->date,
                 $recenttracks['user'],
                 $track->name,
