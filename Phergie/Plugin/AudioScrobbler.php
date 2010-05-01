@@ -162,9 +162,10 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
             return $msg;
         }
         
+        $highlight = $this->getConfig('audioscrobbler.highlight', false);
         if (isset($track['nowplaying'])) {
             $line = '%s is listening to %s by %s';
-            if ($this->config['audioscrobbler.highlight']) {
+            if ($highlight) {
                 $line = '%s is listening to %s by %s';
             }
             
@@ -176,7 +177,7 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
             );
         } else {
             $line = '%s, %s was listening to %s by %s';
-            if ($this->config['audioscrobbler.highlight']) {
+            if ($highlight) {
                 $line = '%s, %s was listening to %s by %s';
             }
             
