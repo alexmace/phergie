@@ -192,7 +192,7 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
             
             $msg = sprintf(
                 $line,
-                $track->date,
+                date('j M Y, H:i', (int) $track->date['uts']),
                 $recenttracks['user'],
                 $track->name,
                 $track->artist
