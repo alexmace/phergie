@@ -186,7 +186,6 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
 
             // Create database tables if necessary
             if (!$table) {
-#                $this->debug('Creating the database schema');
                 $this->db->query(
                     'CREATE TABLE karmas (word VARCHAR(255), karma MEDIUMINT);
                      CREATE UNIQUE INDEX word ON karmas (word);
@@ -387,8 +386,6 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
                     ':word' => $word,
                     ':karma' => $karma
                 );
-#                $this->debug('Updated karma: ' . $word . ' (Sign: ' . substr($sign, 1) . ') = ' . $karma);
-                echo 'Updated karma: ' . $word . ' (Sign: ' . substr($sign, 1) . ') = ' . $karma . "\n";
                 $this->updateKarma->execute($args);
             } else {
                 $karma = ($sign == '++' ? '1' : '-1');
@@ -396,8 +393,6 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
                     ':word' => $word,
                     ':karma' => $karma
                 );
-#                $this->debug('Inserted karma: ' . $word . ' (Sign: ' . substr($sign, 1) . ') = ' . $karma);
-                echo 'Inserted karma: ' . $word . ' (Sign: ' . substr($sign, 1) . ') = ' . $karma . "\n";
                 $this->insertKarma->execute($args);
                 $this->fetchKarma->execute(array(':word'=>$word));
                 $res = $this->fetchKarma->fetch(PDO::FETCH_ASSOC);
@@ -411,8 +406,6 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
                 $comment
             );
             if (!empty($comment)) {
-#                $this->debug('Inserted comment: ' . $comment);
-                echo 'Inserted comment: ' . $comment;
                 $this->insertComment->execute(
                     array(':wordid' => $id, ':comment' => $comment)
                 );
