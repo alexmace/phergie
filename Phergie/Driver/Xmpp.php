@@ -35,6 +35,13 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 {
 
 	/**
+	 * Set whether or not a MOTD event has been faked yet.
+	 * 
+	 * @var boolean 
+	 */
+	protected $fakedMotd = false;
+
+	/**
 	 * Holds the connection to the XMPP server.
 	 * 
 	 * @var Xmpp_Connection 
@@ -332,52 +339,67 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function getEvent()
     {
-		$tag = $this->xmpp->wait();
 
-		// If there is no tag that means we received nothing from the server and
-		// no event has occured.
-		if (empty($tag)) {
-            return null;
-        }
+		// If a MOTD has not yet been faked, do it now
+		if ($this->fakedMotd == false) {
 
-		// Format the arguments as required for the command that was
-		// received
-		switch ($tag) {
-			case 'message':
-				$message = $this->xmpp->getMessage();
-				$from = $message->getFrom();
-				//$this->parseHostmask($from, $nick, $user, $host);
-				$cmd = 'privmsg';
-				$bodies = $message->getBodies();
-				/**
-				 * @todo There may be none or more than one body. Should
-				 *		 handle that situation.
-				 */
-				$args = array($from, $bodies[0]['content']);
+			// XMPP does not require an MOTD the same way that IRC does, so we need
+			// to fake a no motd error to trigger any plugins that depend on the
+			// MOTD.
+			$event = new Phergie_Event_Response();
+			$event->setCode(Phergie_Event_Response::ERR_NOMOTD)->setDescription('');
+			$this->fakedMotd = true;
 
-				// Prepend args with source of message so the plugins know
-				// who to send the response to.
-				// array_unshift($args, $from);
-				break;
+		} else {
 
-			case 'presence':
-				unset($cmd);
-				break;
+			$tag = $this->xmpp->wait();
 
-			default:
-				break;
+			// If there is no tag that means we received nothing from the server
+			// and no event has occured.
+			if (empty($tag)) {
+				return null;
+			}
+
+			// Format the arguments as required for the command that was
+			// received
+			switch ($tag) {
+				case 'message':
+					$message = $this->xmpp->getMessage();
+					$from = $message->getFrom();
+					//$this->parseHostmask($from, $nick, $user, $host);
+					$cmd = 'privmsg';
+					$bodies = $message->getBodies();
+					/**
+					 * @todo There may be none or more than one body. Should
+					 *		 handle that situation.
+					 */
+					$args = array($from, $bodies[0]['content']);
+
+					// Prepend args with source of message so the plugins know
+					// who to send the response to.
+					// array_unshift($args, $from);
+					break;
+
+				case 'presence':
+					unset($cmd);
+					break;
+
+				default:
+					break;
+			}
+
+			if (!isset($cmd)) {
+				return null;
+			}
+
+			$hostmask = Phergie_Hostmask_Xmpp::fromString($from);
+
+			$event = new Phergie_Event_Request;
+			$event->setType($cmd)
+				  ->setArguments($args)
+				  ->setHostmask($hostmask);
+
 		}
-
-		if (!isset($cmd)) {
-			return null;
-		}
-
-		$hostmask = Phergie_Hostmask_Xmpp::fromString($from);
-
-		$event = new Phergie_Event_Request;
-		$event->setType($cmd)
-			  ->setArguments($args)
-			  ->setHostmask($hostmask);
         return $event;
 
 	}
