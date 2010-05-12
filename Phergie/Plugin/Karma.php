@@ -83,6 +83,11 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
      */
     protected $negativeAnswers;
 
+	/**
+	 * Justice Zone Members
+	 */
+	protected $justiceZone;
+
     /**
      * Prepared PDO statements
      *
@@ -168,6 +173,9 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
             $this->fixedKarma[strtolower($nick)] = $static;
         }
 
+		// Get the current members of the Justice Zone
+		$this->justiceZone = $this->getConfig('karma.justice_zone', array());
+
         try {
             // Load or initialize the database
             $default = dirname(__FILE__) . '/Karma/';
@@ -236,6 +244,7 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
         $source = $this->getEvent()->getSource();
         $message = $this->getEvent()->getArgument(1);
         $target = $this->getEvent()->getNick();
+		$username = $this->getEvent()->getHostmask()->getUsername();
 
         // Command prefix check
         $bot = preg_quote($this->getConnection()->getNick());
@@ -337,6 +346,25 @@ class Phergie_Plugin_Karma extends Phergie_Plugin_Abstract
                 );
                 $sign = '--';
             }
+
+			// If someone is in the justice zone then any attempts to decrement
+			// anything will result in their own karma being decremented. Apply
+			// to both username and nick to prevent abuse by changing nickname.
+			// (see http://en.wikipedia.org/wiki/Justice_(Red_Dwarf)#Plot)
+			if (in_array(strtolower($target), $this->justiceZone)
+				|| in_array(strtolower($username), $this->justiceZone)) {
+				$this->doNotice(
+					$target,
+					'You are now entering the Justice Zone. Beyond this point, '
+					. 'it is impossible to commit any act of injustice.'
+				);
+
+				if (in_array(strtolower($target), $this->justiceZone)) {
+					$word = $target;
+				} else {
+					$word = $username;
+				}
+			}
 
             // Antithrottling check
             $host = $this->getEvent()->getHost();
