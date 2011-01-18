@@ -1,6 +1,6 @@
 <?php
 /**
- * Phergie 
+ * Phergie
  *
  * PHP version 5
  *
@@ -11,7 +11,7 @@
  * It is also available through the world-wide-web at this URL:
  * http://phergie.org/license
  *
- * @category  Phergie 
+ * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
  * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
@@ -22,7 +22,7 @@
 /**
  * Composite class for other components to represent the bot.
  *
- * @category Phergie 
+ * @category Phergie
  * @package  Phergie
  * @author   Phergie Development Team <team@phergie.org>
  * @license  http://phergie.org/license New BSD License
@@ -50,9 +50,9 @@ class Phergie_Bot
     protected $config;
 
     /**
-     * Current connection handler instance 
+     * Current connection handler instance
      *
-     * @var Phergie_Connection_Handler 
+     * @var Phergie_Connection_Handler
      */
     protected $connections;
 
@@ -78,7 +78,14 @@ class Phergie_Bot
     protected $ui;
 
     /**
-     * Returns a driver instance, creating one of the default class if 
+     * Current processor instance
+     *
+     * @var Phergie_Process_Abstract
+     */
+    protected $processor;
+
+    /**
+     * Returns a driver instance, creating one of the default class if
      * none has been set.
      *
      * @return Phergie_Driver_Abstract
@@ -128,23 +135,28 @@ class Phergie_Bot
     }
 
     /**
-     * Returns the entire configuration in use or the value of a specific 
+     * Returns the entire configuration in use or the value of a specific
      * configuration setting.
      *
-     * @param string $index Optional index of a specific configuration 
+     * @param string $index   Optional index of a specific configuration
      *        setting for which the corresponding value should be returned
+     * @param mixed  $default Value to return if no match is found for $index
      *
-     * @return mixed Value corresponding to $index or the entire 
+     * @return mixed Value corresponding to $index or the entire
      *         configuration if $index is not specified
      */
-    public function getConfig($index = null)
+    public function getConfig($index = null, $default = null)
     {
         if (empty($this->config)) {
             $this->config = new Phergie_Config;
             $this->config->read('Settings.php');
         }
         if ($index !== null) {
-            return $this->config[$index];
+            if (isset($this->config[$index])) {
+                return $this->config[$index];
+            } else {
+                return $default;
+            }
         }
         return $this->config;
     }
@@ -207,7 +219,7 @@ class Phergie_Bot
     }
 
     /**
-     * Returns a connection handler instance, creating it if it does not 
+     * Returns a connection handler instance, creating it if it does not
      * already exist and using a default class if none has been set.
      *
      * @return Phergie_Connection_Handler
@@ -234,7 +246,7 @@ class Phergie_Bot
     }
 
     /**
-     * Returns an end-user interface instance, creating it if it does not 
+     * Returns an end-user interface instance, creating it if it does not
      * already exist and using a default class if none has been set.
      *
      * @return Phergie_Ui_Abstract
@@ -243,6 +255,7 @@ class Phergie_Bot
     {
         if (empty($this->ui)) {
             $this->ui = new Phergie_Ui_Console;
+            $this->ui->setEnabled($this->getConfig('ui.enabled'));
         }
         return $this->ui;
     }
@@ -261,6 +274,42 @@ class Phergie_Bot
     }
 
     /**
+     * Returns a processer instance, creating one if none exists.
+     *
+     * @return Phergie_Process_Abstract
+     */
+    public function getProcessor()
+    {
+        if (empty($this->processor)) {
+            $class = 'Phergie_Process_Standard';
+
+            $type = $this->getConfig('processor');
+            if (!empty($type)) {
+                $class = 'Phergie_Process_' . ucfirst($type);
+            }
+
+            $this->processor = new $class(
+                $this,
+                $this->getConfig('processor.options', array())
+            );
+        }
+        return $this->processor;
+    }
+
+    /**
+     * Sets the processer instance to use.
+     *
+     * @param Phergie_Process_Abstract $processor Processer instance
+     *
+     * @return Phergie_Bot Provides a fluent interface
+     */
+    public function setProcessor(Phergie_Process_Abstract $processor)
+    {
+        $this->processor = $processor;
+        return $this;
+    }
+
+    /**
      * Loads plugins into the plugin handler.
      *
      * @return void
@@ -268,19 +317,28 @@ class Phergie_Bot
     protected function loadPlugins()
     {
         $config = $this->getConfig();
-        $plugins = $this->getPluginHandler();
+        if (!isset($config['plugins'])
+            || !is_array($config['plugins'])
+        ) {
+            return;
+        }
+
+        if (isset($config['plugins.autoload'])) {
+            $autoload = (bool) $config['plugins.autoload'];
+        } else {
+            $autoload = false;
+        }
+
         $ui = $this->getUi();
-        
-        $plugins->setAutoload($config['plugins.autoload']);
+        $plugins = $this->getPluginHandler();
+        $plugins->setAutoload($autoload);
+
         foreach ($config['plugins'] as $name) {
             try {
                 $plugin = $plugins->addPlugin($name);
                 $ui->onPluginLoad($name);
             } catch (Phergie_Plugin_Exception $e) {
                 $ui->onPluginFailure($name, $e->getMessage());
-                if (!empty($plugin)) {
-                    $plugins->removePlugin($plugin);
-                }
             }
         }
     }
@@ -293,6 +351,12 @@ class Phergie_Bot
     protected function loadConnections()
     {
         $config = $this->getConfig();
+        if (!isset($config['connections'])
+            || !is_array($config['connections'])
+        ) {
+            return;
+        }
+
         $driver = $this->getDriver();
         $connections = $this->getConnectionHandler();
         $plugins = $this->getPluginHandler();
@@ -310,83 +374,29 @@ class Phergie_Bot
     }
 
     /**
-     * Obtains and processes incoming events, then sends resulting outgoing 
-     * events.
-     *
-     * @return void
-     */
-    protected function handleEvents()
-    {
-        $driver = $this->getDriver();
-        $plugins = $this->getPluginHandler();
-        $connections = $this->getConnectionHandler();
-        $events = $this->getEventHandler();
-        $ui = $this->getUi();
-
-        foreach ($connections as $connection) {
-            $driver->setConnection($connection);
-            $plugins->setConnection($connection);
-            $plugins->onTick();
-
-            if ($event = $driver->getEvent()) {
-                $ui->onEvent($event, $connection);
-                $plugins->setEvent($event);
-
-                if (!$plugins->preEvent()) {
-                    continue;
-                }
-
-                $plugins->{'on' . ucfirst($event->getType())}();
-            }
-
-            if (count($events)) {
-                $plugins->preDispatch();
-                foreach ($events as $event) {
-                    $ui->onCommand($event, $connection);
-
-                    $method = 'do' . ucfirst(strtolower($event->getType()));
-                    call_user_func_array(
-                        array($driver, $method),
-                        $event->getArguments()
-                    );
-                }
-                $plugins->postDispatch();
-
-                if ($events->hasEventOfType(Phergie_Event_Request::TYPE_QUIT)) {
-                    $ui->onQuit($connection);
-                    $connections->removeConnection($connection);
-                }
-
-                $events->clearEvents();
-            }
-        }
-    }
-
-    /**
-     * Establishes server connections and initiates an execution loop to 
+     * Establishes server connections and initiates an execution loop to
      * continuously receive and process events.
      *
-     * @return Phergie_Bot Provides a fluent interface 
+     * @return Phergie_Bot Provides a fluent interface
      */
     public function run()
     {
         set_time_limit(0);
-        
+
         $timezone = $this->getConfig('timezone', 'UTC');
         date_default_timezone_set($timezone);
-
-        $ui = $this->getUi();
-        $ui->setEnabled($this->getConfig('ui.enabled'));
 
         $this->loadPlugins();
         $this->loadConnections();
 
+        $processor = $this->getProcessor();
+
         $connections = $this->getConnectionHandler();
         while (count($connections)) {
-            $this->handleEvents();
+            $processor->handleEvents();
         }
 
-        $ui->onShutdown();
+        $this->getUi()->onShutdown();
 
         return $this;
     }

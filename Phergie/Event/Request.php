@@ -1,6 +1,6 @@
 <?php
 /**
- * Phergie 
+ * Phergie
  *
  * PHP version 5
  *
@@ -11,7 +11,7 @@
  * It is also available through the world-wide-web at this URL:
  * http://phergie.org/license
  *
- * @category  Phergie 
+ * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
  * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
@@ -22,15 +22,15 @@
 /**
  * Autonomous event originating from a user or the server.
  *
- * @category Phergie 
+ * @category Phergie
  * @package  Phergie
  * @author   Phergie Development Team <team@phergie.org>
  * @license  http://phergie.org/license New BSD License
  * @link     http://pear.phergie.org/package/Phergie
- * @link      http://www.irchelp.org/irchelp/rfc/chapter4.html
+ * @link     http://www.irchelp.org/irchelp/rfc/chapter4.html
  */
-class Phergie_Event_Request 
-    extends Phergie_Event_Abstract 
+class Phergie_Event_Request
+    extends Phergie_Event_Abstract
     implements ArrayAccess
 {
     /**
@@ -94,6 +94,66 @@ class Phergie_Event_Request
     const TYPE_PONG = 'pong';
 
     /**
+     * Operator message event type
+     */
+    const TYPE_OPER = 'oper';
+
+    /**
+     * Names message event type
+     */
+    const TYPE_NAMES = 'names';
+
+    /**
+     * List message event type
+     */
+    const TYPE_LIST = 'list';
+
+    /**
+     * Stats message event type
+     */
+    const TYPE_STATS = 'stats';
+
+    /**
+     * Links message event type
+     */
+    const TYPE_LINKS = 'links';
+
+    /**
+     * Connect message event type
+     */
+    const TYPE_CONNECT = 'connect';
+
+    /**
+     * Trace message event type
+     */
+    const TYPE_TRACE = 'trace';
+
+    /**
+     * Admin message event type
+     */
+    const TYPE_ADMIN = 'admin';
+
+    /**
+     * Info message event type
+     */
+    const TYPE_INFO = 'info';
+
+    /**
+     * Who message event type
+     */
+    const TYPE_WHO = 'who';
+
+    /**
+     * Whowas message event type
+     */
+    const TYPE_WHOWAS = 'whowas';
+
+    /**
+     * Kill message event type
+     */
+    const TYPE_KILL = 'kill';
+
+    /**
      * CTCP ACTION command event type
      */
     const TYPE_ACTION = 'action';
@@ -114,7 +174,17 @@ class Phergie_Event_Request
     const TYPE_VERSION = 'version';
 
     /**
-     * RAW message event type
+     * CTCP FINGER command event type
+     */
+    const TYPE_FINGER = 'finger';
+
+    /**
+     * ERROR message type
+     */
+    const TYPE_ERROR = 'error';
+
+    /**
+     * Raw event type
      */
     const TYPE_RAW = 'raw';
 
@@ -125,12 +195,22 @@ class Phergie_Event_Request
      */
     protected static $map = array(
 
+        self::TYPE_NICK => array(
+            'nickname' => 0
+        ),
+
+        self::TYPE_WHOIS => array(
+            'server'   => 0,
+            'nickmask' => 1
+        ),
+
         self::TYPE_QUIT => array(
             'message' => 0
         ),
 
         self::TYPE_JOIN => array(
-            'channel' => 0
+            'channel' => 0,
+            'keys'    => 1
         ),
 
         self::TYPE_KICK => array(
@@ -172,14 +252,100 @@ class Phergie_Event_Request
             'text'     => 1
         ),
 
+        self::TYPE_PONG => array(
+            'server'  => 0,
+            'server2' => 1
+        ),
+
         self::TYPE_ACTION => array(
             'target' => 0,
-            'action' => 1
+            'text'   => 1
+        ),
+
+        self::TYPE_PING => array(
+            'nick' => 0,
+            'hash' => 1
+        ),
+
+        self::TYPE_OPER => array(
+            'username' => 0,
+            'password' => 1
+        ),
+
+        self::TYPE_NAMES => array(
+            'channels' => 0
+        ),
+
+        self::TYPE_LIST => array(
+            'channels' => 0
+        ),
+
+        self::TYPE_STATS => array(
+            'query'  => 0,
+            'server' => 1
+        ),
+
+        self::TYPE_LINKS => array(
+            'server' => 0,
+            'mask'   => 1
+        ),
+
+        self::TYPE_CONNECT => array(
+            'target' => 0,
+            'port'   => 1,
+            'remote' => 2
+        ),
+
+        self::TYPE_TRACE => array(
+            'server' => 0
+        ),
+
+        self::TYPE_ADMIN => array(
+            'server' => 0
+        ),
+
+        self::TYPE_INFO => array(
+            'server' => 0
+        ),
+
+        self::TYPE_WHO => array(
+            'name' => 0,
+            'o'    => 1
+        ),
+
+        self::TYPE_WHOWAS => array(
+            'nickname' => 0,
+            'count'    => 1,
+            'server'   => 2
+        ),
+
+        self::TYPE_KILL => array(
+            'nickname' => 0,
+            'comment'  => 1
+        ),
+
+        self::TYPE_ERROR => array(
+            'message' => 0
+        ),
+
+        self::TYPE_TIME => array(
+            'target' => 0,
+            'reply'  => 1
+        ),
+
+        self::TYPE_VERSION => array(
+            'target' => 0,
+            'reply'  => 1
+        ),
+
+        self::TYPE_FINGER => array(
+            'target' => 0,
+            'reply'  => 1
         ),
 
         self::TYPE_RAW => array(
             'message' => 0
-        )
+        ),
 
     );
 
@@ -195,7 +361,7 @@ class Phergie_Event_Request
      *
      * @var array
      */
-    protected $arguments;
+    protected $arguments = array();
 
     /**
      * Raw data sent by the server
@@ -224,6 +390,12 @@ class Phergie_Event_Request
      */
     public function getHostmask()
     {
+        if (empty($this->hostmask)) {
+            throw new Phergie_Event_Exception(
+                'Hostmask has not been set',
+                Phergie_Event_Exception::ERR_MISSING_HOSTMASK
+            );
+        }
         return $this->hostmask;
     }
 
@@ -234,9 +406,27 @@ class Phergie_Event_Request
      *
      * @return Phergie_Event_Request Provides a fluent interface
      */
-    public function setArguments($arguments)
+    public function setArguments(array $arguments)
     {
-        $this->arguments = $arguments;
+        foreach ($arguments as $argument => $value) {
+            $this->setArgument($argument, $value);
+        }
+        return $this;
+    }
+
+    /**
+     * Sets the value of a single argument for the request.
+     *
+     * @param mixed  $argument Integer position (starting from 0) or the
+     *        equivalent string name of the argument from self::$map
+     * @param string $value    Value to assign to the argument
+     *
+     * @return Phergie_Event_Request Provides a fluent interface
+     */
+    public function setArgument($argument, $value)
+    {
+        $argument = $this->resolveArgument($argument);
+        $this->arguments[$argument] = (string) $value;
         return $this;
     }
 
@@ -251,27 +441,52 @@ class Phergie_Event_Request
     }
 
     /**
+     * Removes an argument value from the request.
+     *
+     * @param mixed $argument Integer position (starting from 0) or the
+     *        equivalent string name of the argument from self::$map
+     *
+     * @return Phergie_Event_Request Provides a fluent interface
+     */
+    public function removeArgument($argument)
+    {
+        $argument = $this->resolveArgument($argument);
+        unset($this->arguments[$argument]);
+        return $this;
+    }
+
+    /**
      * Resolves an argument specification to an integer position.
      *
      * @param mixed $argument Integer position (starting from 0) or the
      *        equivalent string name of the argument from self::$map
      *
-     * @return int|null Integer position of the argument or NULL if no 
-     *         corresponding argument was found
+     * @return int Integer position of the argument
      */
     protected function resolveArgument($argument)
     {
         if (isset($this->arguments[$argument])) {
-            return $argument; 
-        } else {
-            $argument = strtolower($argument);
-            if (isset(self::$map[$this->type][$argument])
-                && isset($this->arguments[self::$map[$this->type][$argument]])
-            ) {
-                return self::$map[$this->type][$argument];
+            return $argument;
+        }
+
+        if (isset(self::$map[$this->type])) {
+            if (is_string($argument)) {
+                $argument = strtolower($argument);
+                if (isset(self::$map[$this->type][$argument])) {
+                    return self::$map[$this->type][$argument];
+                }
+            } else {
+                if (in_array($argument, self::$map[$this->type])) {
+                    return $argument;
+                }
             }
         }
-        return null;
+
+        throw new Phergie_Event_Exception(
+            'Argument "' . $argument . '" could not be resolved for'
+                . ' event type "' . $this->type . '"',
+            Phergie_Event_Exception::ERR_INVALID_ARGUMENT
+        );
     }
 
     /**
@@ -285,7 +500,7 @@ class Phergie_Event_Request
     public function getArgument($argument)
     {
         $argument = $this->resolveArgument($argument);
-        if ($argument !== null) { 
+        if (isset($this->arguments[$argument])) {
             return $this->arguments[$argument];
         }
         return null;
@@ -321,22 +536,38 @@ class Phergie_Event_Request
      */
     public function getNick()
     {
-        return $this->hostmask->getNick();
+        return $this->getHostmask()->getNick();
     }
 
     /**
-     * Returns the channel name if the event occurred in a channel or the 
-     * user nick if the event was a private message directed at the bot by a 
-     * user. 
+     * Determines whether a given string is a valid IRC channel name.
+     *
+     * @param string $string String to analyze
+     *
+     * @return bool TRUE if $string contains a valid channel name, FALSE
+     *         otherwise
+     */
+    protected function isChannelName($string)
+    {
+        // Per the 2000 RFCs 2811 and 2812, channels may begin with &, #, +, or !
+        return (strspn($string, '#&+!', 0, 1) >= 1);
+    }
+
+    /**
+     * Returns the channel name if the event occurred in a channel or the
+     * user nick if the event was a private message directed at the bot by a
+     * user.
      *
      * @return string
      */
     public function getSource()
     {
-        if (substr($this->arguments[0], 0, 1) == '#') {
+        if (!empty($this->arguments[0])
+            && $this->isChannelName($this->arguments[0])
+        ) {
             return $this->arguments[0];
         }
-        return $this->hostmask->getNick();
+        return $this->getHostmask()->getNick();
     }
 
     /**
@@ -346,7 +577,7 @@ class Phergie_Event_Request
      */
     public function isInChannel()
     {
-        return (substr($this->getSource(), 0, 1) == '#');
+        return $this->isChannelName($this->getSource());
     }
 
     /**
@@ -356,10 +587,7 @@ class Phergie_Event_Request
      */
     public function isFromUser()
     {
-        if (empty($this->hostmask)) {
-            return false;
-        }
-        $username = $this->hostmask->getUsername();
+        $username = $this->getHostmask()->getUsername();
         return !empty($username);
     }
 
@@ -370,7 +598,7 @@ class Phergie_Event_Request
      */
     public function isFromServer()
     {
-        $username = $this->hostmask->getUsername();
+        $username = $this->getHostmask()->getUsername();
         return empty($username);
     }
 
@@ -388,6 +616,10 @@ class Phergie_Event_Request
         if (!count($arguments) && substr($name, 0, 3) == 'get') {
             return $this->getArgument(substr($name, 3));
         }
+        throw new Phergie_Event_Exception(
+            'Called invalid method ' . $name . ' in ' . __CLASS__,
+            Phergie_Event_Exception::ERR_INVALID_METHOD_CALL
+        );
     }
 
     /**
@@ -395,12 +627,16 @@ class Phergie_Event_Request
      *
      * @param string|int $offset Argument name or position beginning from 0
      *
-     * @return bool TRUE if the argument has a value, FALSE otherwise 
+     * @return bool TRUE if the argument has a value, FALSE otherwise
      * @see ArrayAccess::offsetExists()
      */
     public function offsetExists($offset)
     {
-        return ($this->resolveArgument($offset) !== null);
+        try {
+            return ($this->getArgument($offset) != null);
+        } catch (Phergie_Event_Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -427,10 +663,7 @@ class Phergie_Event_Request
      */
     public function offsetSet($offset, $value)
     {
-        $offset = $this->resolveArgument($offset);
-        if ($offset !== null) { 
-            $this->arguments[$offset] = $value;
-        }
+        $this->setArgument($offset, $value);
     }
 
     /**
@@ -443,8 +676,18 @@ class Phergie_Event_Request
      */
     public function offsetUnset($offset)
     {
-        if ($offset = $this->resolveArgument($offset)) {
-            unset($this->arguments[$offset]);
-        }
+        $this->removeArgument($offset);
+    }
+
+    /**
+     * Returns a mapping of commands to their respective arguments.
+     *
+     * @return array Associative array keyed by command referencing an
+     *         associative array keyed by argument name referencing its
+     *         position starting from 0
+     */
+    public static function getArgumentMapping()
+    {
+        return self::$map;
     }
 }

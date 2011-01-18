@@ -20,12 +20,17 @@
  */
 
 /**
+ * Provides commands to look up information on tracks played by specific 
+ * users on the Last.fm and Libre.fm services.
+ *
  * TODO: Make the "nick-binding" use an SQLite database instead of having them
  *       hard-coded in to the config file.
  * 
  * Configuration settings:
  * "audioscrobbler.lastfm_api_key":  API given by last.fm (string).
  * "audioscrobbler.librefm_api_key": API key given by libre.fm (string).
+ * "audioscrobbler.nick_binding":    Array of IRC nicks (key) to last.fm and 
+ *                                   libre.fm user names (value) (array).
  * 
  * @category Phergie
  * @package  Phergie_Plugin_AudioScrobbler
@@ -129,9 +134,16 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
     public function getScrobbled($user, $url, $key)
     {
         $event = $this->getEvent();
-        $user = $user ? $user : $event->getNick();
+        
+        // Handle nick-binding.
+        $nick_binding = $this->getConfig('audioscrobbler.nick_binding', null);
+        if ($user === null && !empty($nick_binding[$event->getNick()])) {
+            $user = $nick_binding[$event->getNick()];
+        } else {
+            $user = $user ? $user : $event->getNick();
+        }
+        
         $url = sprintf($url . $this->query, urlencode($user), urlencode($key));
-
         $response = $this->http->get($url);
         if ($response->isError()) {
             $this->doNotice(
