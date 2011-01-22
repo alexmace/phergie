@@ -174,10 +174,12 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      *
      * @param string $target MUC name or user nick
      * @param string $mode   New mode to assign (optional)
+     * @param string $param  User limit when $mode is 'l', user hostmask
+     *        when $mode is 'b', or user nick when $mode is 'o'
      *
      * @return void
      */
-    public function doMode($target, $mode = null)
+    public function doMode($target, $mode = null, $param = null)
     {
     }
 
@@ -366,14 +368,16 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 				case 'message':
 					$message = $this->xmpp->getMessage();
 					$from = $message->getFrom();
-					//$this->parseHostmask($from, $nick, $user, $host);
-					$cmd = 'privmsg';
 					$bodies = $message->getBodies();
-					/**
-					 * @todo There may be none or more than one body. Should
-					 *		 handle that situation.
-					 */
-					$args = array($from, $bodies[0]['content']);
+
+					if (count($bodies) > 0) {
+						$cmd = 'privmsg';
+						/**
+						 * @todo There may be more than one body. Should
+						 *		 handle that situation.
+						 */
+						$args = array($from, $bodies[0]['content']);
+					}
 
 					// Prepend args with source of message so the plugins know
 					// who to send the response to.
