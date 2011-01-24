@@ -20,7 +20,7 @@
  */
 
 /**
- * Unit tests for Pherge_Hostmask classes
+ * Unit tests for Pherge_Hostmask_Xmpp classes
  *
  * @category Phergie
  * @package  Phergie_Tests

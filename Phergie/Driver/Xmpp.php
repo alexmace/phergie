@@ -48,6 +48,28 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 	 */
 	protected $xmpp;
 
+	/**
+	 * Establishes an XMPP connection.
+	 * 
+	 * This is done in a seperate function mainly to allow for stubbing during
+	 * unit testing.
+	 * 
+	 * @param string $username Username to authenticate with.
+	 * @param string $password Password associated with the username.
+	 * @param string $hostname Host name to connect to.
+	 * @param bool   $ssl      Whether or not to use SSL.
+	 * @param int    $port     Port to connect to the server on.
+	 * @param string $resource "Resource" part of the JID to connect with.
+	 * 
+	 * @return Xmpp_Connection
+	 */
+	protected function connect($username, $password, $hostname, $ssl, $port, $resource = 'Bot')
+	{
+		return new Xmpp_Connection(
+			$username, $password, $hostname, $ssl, Zend_Log::EMERG, $port,
+			$resource);
+	}
+
     /**
      * There isn't actually an XMPP equivilent to the IRC ACTION command, but
 	 * most clients with interpret a message starting "/me" in the same way,
@@ -89,9 +111,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			$ssl = true;
 		}
 
-		$this->xmpp = new Xmpp_Connection(
-			$username, $password, $hostname, $ssl, Zend_Log::EMERG, $port,
-			'Bot');
+		$this->xmpp = $this->connect($username, $password, $hostname, $ssl, $port);
 
 		$this->xmpp->connect();
 		$this->xmpp->authenticate();
