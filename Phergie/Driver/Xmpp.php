@@ -82,6 +82,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doAction($target, $text)
     {
+		$this->doPrivmsg($target, '/me ' . $text);
     }
 
     /**
@@ -192,7 +193,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
     /**
      * Retrieves or changes a MUC or user mode.
      *
-     * @param string $target MUC name or user nick
+     * @param string $target Channel name or user nick
      * @param string $mode   New mode to assign (optional)
      * @param string $param  User limit when $mode is 'l', user hostmask
      *        when $mode is 'b', or user nick when $mode is 'o'
@@ -235,6 +236,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doNotice($target, $text)
     {
+		$this->doPrivmsg($target, $text);
     }
 
     /**

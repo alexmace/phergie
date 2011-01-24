@@ -36,7 +36,7 @@ class Phergie_Hostmask_Xmpp extends Phergie_Hostmask
      *
      * @var string
      */
-    protected static $regex = '/^([^@]+)@([^\/]+)\/(.*)/';
+    protected static $regex = '/^([^@]+)@([^\/]+)\/?(.*)/';
 
     /**
      * Parses a string containing the entire hostmask into a new instance of
