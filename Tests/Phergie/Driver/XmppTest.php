@@ -33,16 +33,16 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
     /**
      * Instance of the class to test
      *
-     * @var Phergie_Driver_Streams
+     * @var Phergie_Driver_Xmpp
      */
     private $driver;
 
     /**
-     * List of sockets in use by the driver
+     * List of Xmpp_Connection instances in use by the driver.
      *
      * @var array
      */
-    protected $sockets;
+    protected $xmpps;
 
     /**
      * Instantiates the class to test and its mock dependencies.
@@ -51,14 +51,14 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      */
     public function setUp()
     {
-/*        $this->sockets = array();
+        $this->xmpps = array();
         $this->driver = $this->getMock(
-            'Phergie_Driver_Streams', array('write', 'connect')
+            'Phergie_Driver_Xmpp', array('connect')
         );
-        $this->driver
+/*        $this->driver
             ->expects($this->any())
             ->method('connect')
-            ->will($this->returnCallback(array($this, 'createSocket')));*/
+            ->will($this->returnCallback(array($this, 'createXmppConnection')));*/
     }
 
     /**
@@ -66,12 +66,12 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return resource Stream socket
      */
-/*    public function createSocket()
+    public function createXmppConnection()
     {
-        $socket = fopen('php://temp', 'r+');
-        $this->sockets[] = $socket;
-        return $socket;
-    }*/
+        $xmpp = $this->getMock('Xmpp_Connection', array(), array(), '', false);
+        $this->xmpps[] = $xmpp;
+        return $xmpp;
+    }
 
     /**
      * Simulates a server by writing data to a specified socket for the
@@ -94,14 +94,15 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return Phergie_Connection
      */
-/*    protected function getMockConnection()
+    protected function getMockConnection()
     {
         $options = array(
             'host'      => '0.0.0.0',
-            'port'      => 6667,
-            'username'  => 'username',
-            'realname'  => 'realname',
-            'transport' => 'tcp'
+            'port'      => 5222,
+            'username'  => 'username@realm',
+            'nick'      => 'nick',
+            'transport' => 'tcp',
+			'resource'  => 'tests'
         );
         $connection = parent::getMockConnection();
         foreach ($options as $key => $value) {
@@ -111,7 +112,7 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
                 ->will($this->returnValue($value));
         }
         return $connection;
-    }*/
+    }
 
     /**
      * Tests that a default socket timeout is used if none is set.
@@ -160,12 +161,12 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return void
      */
-/*    public function testSetConnectionWithNewConnection()
+    public function testSetConnectionWithNewConnection()
     {
         $connection = $this->getMockConnection();
         $this->driver->setConnection($connection);
         $this->assertSame($connection, $this->driver->getConnection());
-    }*/
+    }
 
     /**
      * Mocks driver method calls for sending commands.
@@ -236,14 +237,40 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      * @return void
      * @depends testSetConnectionWithNewConnection
      */
-/*    public function testDoConnectWithPassword()
+    public function testDoConnectWithPassword()
     {
         $connection = $this->getMockConnection();
         $connection
             ->expects($this->any())
             ->method('getPassword')
             ->will($this->returnValue('password'));
+		
+		// Setup a mock Xmpp_Connection object that the call to connect() will 
+		// return
+		$xmpp = $this->createXmppConnection();
+		$xmpp
+			->expects($this->once())
+			->method('connect');
+		$xmpp
+			->expects($this->once())
+			->method('authenticate');
+		$xmpp
+			->expects($this->once())
+			->method('bind');
+		$xmpp
+			->expects($this->once())
+			->method('establishSession');
+		$xmpp
+			->expects($this->once())
+			->method('presence');
 
+		// Get the call to connect to return the connection
+		$this->driver
+			->expects($this->once())
+			->method('connect')
+			->with($this->equalTo($connection->getUsername()), $connection->getPassword(), $connection->getHost(), false, $connection->getPort())
+			->will($this->returnValue($xmpp));
+/*$username, $password, $hostname, $ssl, $port
         $this->assertSendsCommands(
             array(
                 1 => 'PASS :' . $connection->getPassword(),
@@ -258,11 +285,11 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
                 4 => 'QUIT'
             )
         );
-
+*/
         $this->driver->setConnection($connection);
         $this->driver->doConnect();
         $this->driver->doQuit();
-    } */
+    }
 
     /**
      * Tests that an exception is thrown if a socket error occurs when
