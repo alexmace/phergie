@@ -295,6 +295,9 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doQuit($reason = null)
     {
+		// We don't pass the reason on here because that is used for IRC
+		// connections, it is irrelevant for XMPP connections.
+		$this->xmpp->disconnect();
 	}
 
     /**
