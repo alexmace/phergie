@@ -114,6 +114,13 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 
 		$this->xmpp = $this->connect($username, $password, $hostname, $ssl, $port);
 
+        if (!$this->xmpp) {
+            throw new Phergie_Driver_Exception(
+                'Unable to connect.',
+                Phergie_Driver_Exception::ERR_CONNECTION_ATTEMPT_FAILED
+            );
+        }
+
 		$this->xmpp->connect();
 		$this->xmpp->authenticate();
 		$this->xmpp->bind();
