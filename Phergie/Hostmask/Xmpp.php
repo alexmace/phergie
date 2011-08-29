@@ -36,24 +36,36 @@ class Phergie_Hostmask_Xmpp extends Phergie_Hostmask
      *
      * @var string
      */
-    protected static $regex = '/^([^@]+)@([^\/]+)\/?(.*)/';
+    protected static $regex = '/^(([^@]+)@)?([^\/]+)\/?(.*)/';
 
     /**
      * Parses a string containing the entire hostmask into a new instance of
      * this class.
      *
-     * @param string $jid Entire jid including the username, realm and resource
-     *					  components
+     * @param string $jid  Entire jid including the username, realm and resource
+     *					   components
+	 * @param string $type The type of message the jid has come from. This is 
+	 *					   important because the contents of the jid have 
+	 *					   different meanings in different contexts. 
      *
      * @return Phergie_Hostmask_Xmpp New instance populated with data parsed
 	 *								 from the provided hostmask string
      * @throws Phergie_Hostmask_Exception
      */
-    public static function fromString($jid)
+    public static function fromString($jid, $type = 'chat')
     {
         if (preg_match(self::$regex, $jid, $match)) {
-            list(, $username, $realm, $resource) = $match;
-			$nick = $username . '@' . $realm;
+			if ($type == 'groupchat') {
+				//var_dump($match);
+				//exit;
+				list(, , $room, $realm, $nick) = $match;
+				$username = '';
+			} else {
+				list(, , $username, $realm, $resource) = $match;
+				$nick = $username . '@' . $realm;
+			}
+			
+			
             return new self($nick, $username, $realm);
         }
 

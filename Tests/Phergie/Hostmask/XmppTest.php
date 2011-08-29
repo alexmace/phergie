@@ -48,6 +48,23 @@ class Phergie_Hostmask_XmppTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * Tests the creation of the Hostmask class from an XMPP JID on a groupchat
+	 * message.
+	 */
+	public function testFromStringForGroupChat()
+	{
+		// Create the host mask.
+		$hostmask = Phergie_Hostmask_Xmpp::fromString(
+			'room@conference.realm.server.com/nick', 'groupchat');
+
+		// Test that the host mask contains the expected information
+		$this->assertAttributeSame('conference.realm.server.com', 'host', $hostmask);
+		$this->assertAttributeSame('room@conference.realm.server.com', 'nick', $hostmask);
+		$this->assertAttributeSame('nick', 'username', $hostmask);
+
+	}
+
+	/**
 	 * Tests the creation of the Hostmask class from an XMPP JID.
 	 */
 	public function testFromStringInvalidJid()

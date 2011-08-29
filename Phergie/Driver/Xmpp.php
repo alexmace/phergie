@@ -258,7 +258,8 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
     }
 
     /**
-     * Sends a CTCP PING request or response (they are identical) to a user.
+     * Sends a <ping/> tag to the server. The nick and and hash are ignored on 
+	 * XMPP.
      *
      * @param string $nick User nick
      * @param string $hash Hash to use in the handshake
@@ -267,6 +268,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doPing($nick, $hash)
     {
+		$this->xmpp->ping();
     }
 
     /**
@@ -393,14 +395,17 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			if (empty($tag)) {
 				return null;
 			}
+			
+			// Holding array for the arguments.
+			$args = array();
 
 			// Format the arguments as required for the command that was
 			// received
 			switch ($tag) {
 				case 'message':
-					$message = $this->xmpp->getMessage();
-					$from = $message->getFrom();
-					$bodies = $message->getBodies();
+					$stanza = $this->xmpp->getMessage();
+					$from = $stanza->getFrom();
+					$bodies = $stanza->getBodies();
 
 					if (count($bodies) > 0) {
 						$cmd = 'privmsg';
@@ -408,16 +413,33 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 						 * @todo There may be more than one body. Should
 						 *		 handle that situation.
 						 */
-						$args = array($from, $bodies[0]['content']);
+						$args[] = $bodies[0]['content'];
 					}
-
+					
 					// Prepend args with source of message so the plugins know
 					// who to send the response to.
-					// array_unshift($args, $from);
+					
+					// If it's a group chat message, we want to strip off the 
+					// nickname so it doesn't decide that it's a normal message
+					// later.
+					if ($stanza->getType() == 'groupchat') {
+						// Get it again because we still want the nickname in
+						// there when processing the actual message...
+						array_unshift($args, array_shift(explode('/', $stanza->getFrom())));
+					} else {
+						array_unshift($args, $from);
+					}
+					
 					break;
 
 				case 'presence':
 					unset($cmd);
+					break;
+				
+				case 'iq':
+					$stanza = $this->xmpp->getIq();
+					$from = $stanza->getFrom();
+					$cmd = 'pong';
 					break;
 
 				default:
@@ -428,9 +450,9 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 				return null;
 			}
 
-			$hostmask = Phergie_Hostmask_Xmpp::fromString($from);
+			$hostmask = Phergie_Hostmask_Xmpp::fromString($from, $stanza->getType());
 
-			$event = new Phergie_Event_Request;
+			$event = new Phergie_Event_Request_Xmpp;
 			$event->setType($cmd)
 				  ->setArguments($args)
 				  ->setHostmask($hostmask);
