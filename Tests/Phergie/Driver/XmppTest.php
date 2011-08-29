@@ -66,12 +66,21 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return resource Stream socket
      */
-    public function createXmppConnection()
+    private function createXmppConnection()
     {
         $xmpp = $this->getMock('Xmpp_Connection', array(), array(), '', false);
         $this->xmpps[] = $xmpp;
         return $xmpp;
     }
+
+	private function setXmppConnection($connection, $xmpp)
+	{
+		$this->driver
+			->expects($this->once())
+			->method('connect')
+			->with($this->equalTo($connection->getUsername()), $connection->getPassword(), $connection->getHost(), false, $connection->getPort())
+			->will($this->returnValue($xmpp));
+	}
 
     /**
      * Simulates a server by writing data to a specified socket for the
@@ -177,30 +186,32 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return void
      */
-/*    protected function assertSendsCommands(array $commands)
+    protected function assertSendsCommands($xmpp, array $commands)
     {
         foreach ($commands as $index => $command) {
-            $this->driver
+            $xmpp
                 ->expects($this->at($index))
-                ->method('write')
-                ->with($command . "\r\n")
-                ->will($this->returnValue(strlen($command) + 2));
+                ->method($command)
+				->with()
+				->will($this->returnValue(true));
         }
-    }*/
+
+		return $xmpp;
+    }
 
     /**
-     * Mocks driver method calls to accept all write operations for sending
-     * commands as successes.
+     * Mocks XMPP connection calls to accept all operations.
      *
      * @return void
      */
-/*    protected function acceptAllCommands()
+    protected function acceptAllCommands($xmpp)
     {
-        $this->driver
+        $xmpp
             ->expects($this->any())
-            ->method('write')
-            ->will($this->returnCallback('strlen'));
-    }*/
+			->will($this->returnValue(true));
+		return $xmpp;
+
+    }
 
     /**
      * Tests connecting to a server without a password.
@@ -265,27 +276,8 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
 			->method('presence');
 
 		// Get the call to connect to return the connection
-		$this->driver
-			->expects($this->once())
-			->method('connect')
-			->with($this->equalTo($connection->getUsername()), $connection->getPassword(), $connection->getHost(), false, $connection->getPort())
-			->will($this->returnValue($xmpp));
-/*$username, $password, $hostname, $ssl, $port
-        $this->assertSendsCommands(
-            array(
-                1 => 'PASS :' . $connection->getPassword(),
-                2 => sprintf(
-                    'USER %s %s %s :%s',
-                    $connection->getUsername(),
-                    $connection->getHost(),
-                    $connection->getHost(),
-                    $connection->getRealname()
-                ),
-                3 => 'NICK :' . $connection->getNick(),
-                4 => 'QUIT'
-            )
-        );
-*/
+		$this->setXmppConnection($connection, $xmpp);
+
         $this->driver->setConnection($connection);
         $this->driver->doConnect();
         $this->driver->doQuit();
@@ -297,9 +289,9 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return void
      */
-/*    public function testDoConnectHandlesSocketException()
+    public function testDoConnectHandlesSocketException()
     {
-        $this->driver = $this->getMock('Phergie_Driver_Streams', array('connect'));
+        $this->driver = $this->getMock('Phergie_Driver_Xmpp', array('connect'));
         $this->driver
             ->expects($this->any())
             ->method('connect')
@@ -317,7 +309,7 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
                 $this->fail('Unexpected exception code: ' . $e->getCode());
             }
         }
-    }*/
+    }
 
     /**
      * Callback for testSendHandlesPartialWriteWithSuccess() to mock the
@@ -437,45 +429,61 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return void
      */
-/*    private function doCommandTest($command, $method, array $args = array())
+    private function doCommandTest($command, $method, array $args = array())
     {
-        $this->acceptAllCommands();
-        $this->driver->setConnection($this->getMockConnection());
+		// Test if we can just create the xmpp connection and then pass the
+		// class into acceptAllCommands without getting it back out again
+		// manually.
+		$xmpp = $this->createXmppConnection();
 
-        $this->assertSendsCommands(array(
-            3 => $command
+		// Need to complete the setting up of the Xmpp connection here by
+		// telling it what functions it should expect to be called. We can use
+		// assertSendsCommands here in doConnect as well.
+        $xmpp = $this->assertSendsCommands($xmpp, array(
+            5 => $command
         ));
 
-        $this->driver->doConnect();
+		$connection = $this->getMockConnection();
+		$this->driver->setConnection($connection);
+
+		// Now need to tell the internal connect function to return the xmpp
+		// connection. This should go in a function in this class with can also
+		// replace the same bit of code in the doConnectTest
+		$this->setXmppConnection($connection, $xmpp);
+
+		$this->driver->doConnect();
         call_user_func_array(array($this->driver, $method), $args);
         if ($method != 'doQuit') {
             $this->driver->doQuit();
         }
-    }*/
+    }
 
     /**
      * Tests sending a QUIT command with a reason.
      *
      * @return void
      * @depends testSetConnectionWithNewConnection
-     * @depends testDoConnectWithoutPassword
+     * @depends testDoConnectWithPassword
      */
-/*    public function testDoQuitWithReason()
+    public function testDoQuitWithReason()
     {
-        $this->doCommandTest('QUIT', 'doQuit');
-    }*/
+        $this->doCommandTest('disconnect', 'doQuit');
+    }
 
     /**
      * Tests sending a JOIN command without channel keys.
      *
      * @return void
      * @depends testSetConnectionWithNewConnection
-     * @depends testDoConnectWithoutPassword
+     * @depends testDoConnectWithPassword
      */
-/*    public function testDoJoinWithoutKeys()
+    public function testDoJoinWithoutKeys()
     {
-        $this->doCommandTest('JOIN :#channel', 'doJoin', array('#channel'));
-    }*/
+        $this->doCommandTest(
+			'join', 'doJoin',
+			array('room@conference.realm', $this->getMockConnection()->getNick())
+		);
+    }
 
     /**
      * Tests sending a JOIN command with channel keys.
@@ -887,9 +895,9 @@ class Phergie_Driver_XmppTest extends Phergie_TestCase
      *
      * @return void
      * @depends testSetConnectionWithNewConnection
-     * @depends testDoConnectWithoutPassword
+     * @depends testDoConnectWithPassword
      */
-/*    public function testGetEventWithNoData()
+    public function testGetEventWithNoData()
     {
         $this->acceptAllCommands();
         $connection = $this->getMockConnection();
