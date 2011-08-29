@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Tests
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Tests
  */
@@ -181,7 +181,7 @@ class Phergie_Connection_HandlerTest extends Phergie_TestCase
 
         $this->connections->addConnection($connection);
         $connections = $this->connections->getConnections($hostmaskString);
-        $this->assertType('array', $connections);
+        $this->assertInternalType('array', $connections);
         $this->assertSame(1, count($connections));
         $this->assertArrayHasKey($hostmaskString, $connections);
         $this->assertSame($connection, $connections[$hostmaskString]);
@@ -209,7 +209,7 @@ class Phergie_Connection_HandlerTest extends Phergie_TestCase
             $this->connections->addConnection($connections[$index]);
         }
         $returned = $this->connections->getConnections($hostmaskStrings);
-        $this->assertType('array', $returned);
+        $this->assertInternalType('array', $returned);
         $this->assertEquals(2, count($returned));
         foreach ($hostmaskStrings as $index => $hostmaskString) {
             $this->assertArrayHasKey($hostmaskString, $returned);

@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie
  */
@@ -33,7 +33,7 @@ class Phergie_Bot
     /**
      * Current version of Phergie
      */
-    const VERSION = '2.0.1';
+    const VERSION = '2.0.5';
 
     /**
      * Current driver instance
@@ -149,7 +149,7 @@ class Phergie_Bot
     {
         if (empty($this->config)) {
             $this->config = new Phergie_Config;
-            $this->config->read('Settings.php');
+            $this->config->read(dirname(__FILE__) . '/../Settings.php');
         }
         if ($index !== null) {
             if (isset($this->config[$index])) {

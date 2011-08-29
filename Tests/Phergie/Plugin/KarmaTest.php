@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Tests
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Tests
  */
@@ -113,7 +113,7 @@ class Phergie_Plugin_KarmaTest extends Phergie_Plugin_TestCase
     public function testGetDb()
     {
         $db = $this->plugin->getDb();
-        $this->assertType('PDO', $db);
+        $this->assertInstanceOf('PDO', $db);
     }
 
     /**
@@ -166,7 +166,7 @@ class Phergie_Plugin_KarmaTest extends Phergie_Plugin_TestCase
         $term = 'phergie';
         $this->createMockDatabase();
         $event = $this->initiateKarmaEvent($term);
-        $this->checkForKarmaResponse($event, $term, 'phergie has karma of awesome.');
+        $this->checkForKarmaResponse($event, $term, 'phergie has karma of awesome');
     }
 
     /**

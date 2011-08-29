@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Plugin_FeedManager
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Plugin_FeedManager
  */
@@ -63,10 +63,28 @@ class Phergie_Plugin_FeedManager extends Phergie_Plugin_Abstract
             $this->fail('PDO and pdo_sqlite extensions must be installed');
         }
 
-        $path = dirname(__FILE__) . '/FeedTicker/feedticker.db';
+        $defaultDbLocation = dirname(__FILE__) . '/FeedTicker/feedticker.db';
+
+        $fileName = $this->getConfig('feedticker.sqlite_db', $defaultDbLocation);
+        $dirName = dirname($fileName);
+
+        $exists = file_exists($fileName);
+        if (!file_exists($dirName)) {
+            mkdir($dirName);
+        }
+
+        if ((file_exists($fileName) && !is_writable($fileName))
+            || (!file_exists($fileName) && !is_writable($dirName))
+        ) {
+            throw new Phergie_Plugin_Exception(
+                'SQLite DB file exists and cannot be written,'
+                . ' OR does not exist and cannot be created: '
+                . $fileName
+            );
+        }
 
         try {
-            $this->db = new PDO('sqlite:' . $path);
+            $this->db = new PDO('sqlite:' . $fileName);
         } catch (PDO_Exception $e) {
             throw new Phergie_Plugin_Exception($e->getMessage());
         }
@@ -355,7 +373,7 @@ class Phergie_Plugin_FeedManager extends Phergie_Plugin_Abstract
         }
 
         $feed_ids = array();
-        foreach ($feeds as $f) { 
+        foreach ($feeds as $f) {
             $feed_ids[] = $f['rowid'];
         }
         $feed_ids = implode(',', $feed_ids);

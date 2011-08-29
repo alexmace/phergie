@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Plugin_Google
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Plugin_Google
  */
@@ -374,10 +374,10 @@ class Phergie_Plugin_Google extends Phergie_Plugin_Abstract
             return;
         }
 
-        $start = strpos($contents, '<h3 class=r>');
+        $start = strpos($contents, '<h2 class=r');
 
         if ($start === false) {
-            $start = strpos($contents, '<h2 class=r');
+            $start = strpos($contents, '<h3 class="r">');
         }
 
         if ($start !== false) {

@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie
  */
@@ -162,7 +162,7 @@ class Phergie_Driver_Streams extends Phergie_Driver_Abstract
     public function getActiveReadSockets($sec = 0, $usec = 200000)
     {
         $read = $this->sockets;
-        $write = $except = $sec = $usec = null;
+        $write = $except = null;
         $active = array();
 
         if (count($this->sockets) > 0) {

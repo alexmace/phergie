@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Plugin_Url
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Plugin_Url
  */
@@ -34,6 +34,7 @@
  * @uses     Phergie_Plugin_Encoding pear.phergie.org
  * @uses     Phergie_Plugin_Http pear.phergie.org
  * @uses     Phergie_Plugin_Tld pear.phergie.org
+ * @uses     Phergie_Plugin_Cache pear.phergie.org
  */
 class Phergie_Plugin_Url extends Phergie_Plugin_Abstract
 {
@@ -52,7 +53,7 @@ class Phergie_Plugin_Url extends Phergie_Plugin_Abstract
      *
      * @var int
      */
-    protected $expire = 1800;
+    protected $expire = 300;
 
     /**
      * Number of entries to keep in the cache at one time per channel
@@ -525,11 +526,11 @@ class Phergie_Plugin_Url extends Phergie_Plugin_Abstract
                         : '//'
                         )
                      : '');
-                $uri .= !empty($parsed['user']
+                $uri .= !empty($parsed['user'])
                      ? $parsed['user'] .
                         (!empty($parsed['pass'])
                         ? ':' . $parsed['pass']
-                        : '') . '@' : '');
+                        : '') . '@' : '';
             }
             if ($base && !empty($parsed['host'])) {
                 $parsed['host'] = trim($parsed['host']);
