@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Tests
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Tests
  */
@@ -105,7 +105,7 @@ class Phergie_Plugin_HandlerTest extends PHPUnit_Framework_TestCase
             'Handler does not implement IteratorAggregate'
         );
 
-        $this->assertType(
+        $this->assertInstanceOf(
             'Iterator',
             $this->handler->getIterator(),
             'getIterator() must return an iterator'
@@ -119,7 +119,7 @@ class Phergie_Plugin_HandlerTest extends PHPUnit_Framework_TestCase
      */
     public function testGetIteratorReturnsDefault()
     {
-        $this->assertType(
+        $this->assertInstanceOf(
             'Phergie_Plugin_Iterator',
             $this->handler->getIterator()
         );
@@ -143,7 +143,7 @@ class Phergie_Plugin_HandlerTest extends PHPUnit_Framework_TestCase
 
         $this->handler->setIteratorClass('DummyIterator');
 
-        $this->assertType(
+        $this->assertInstanceOf(
             'DummyIterator',
             $this->handler->getIterator()
         );
@@ -197,7 +197,7 @@ class Phergie_Plugin_HandlerTest extends PHPUnit_Framework_TestCase
             'Handler does not implement Countable'
         );
 
-        $this->assertType(
+        $this->assertInternalType(
             'int',
             count($this->handler),
             'count() must return an integer'
@@ -405,7 +405,7 @@ class Phergie_Plugin_HandlerTest extends PHPUnit_Framework_TestCase
         $returnedPlugin = $this->handler->addPlugin($pluginName);
         $this->assertTrue($this->handler->hasPlugin($pluginName));
 
-        $this->assertType(
+        $this->assertInstanceOf(
             'Phergie_Plugin_Mock',
             $this->handler->getPlugin($pluginName)
         );
@@ -786,7 +786,7 @@ class Phergie_Plugin_HandlerTest extends PHPUnit_Framework_TestCase
         $this->handler->setAutoload(true);
         $this->handler->addPath(dirname(__FILE__), 'Phergie_Plugin_');
         $plugin = $this->handler->getPlugin('Mock');
-        $this->assertType(
+        $this->assertInstanceOf(
             'Phergie_Plugin_Mock',
             $plugin,
             'Retrieved plugin not of expected class'

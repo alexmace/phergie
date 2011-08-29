@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie
  */
@@ -43,11 +43,15 @@ class PhergiePackageTask extends PearPackage2Task
             'lead', 'team', 'Phergie Development Team', 'team@phergie.org'
         );
 
-        $path = str_replace('_', '/', $this->package) . '.php'; 
+        $path = str_replace('_', '/', $this->package) . '.php';
         if (file_exists($path)) {
             $contents = file_get_contents($path);
             preg_match_all('#/\*\*(.*)\*/#Ums', $contents, $matches, PREG_SET_ORDER);
-            $doc = $matches[1][1];
+            foreach ($matches as $match) {
+                if (strpos($match[1], '@author') !== false) {
+                    $doc = $match[1];
+                }
+            }
 
             $have_summary = false;
             $have_description = false;

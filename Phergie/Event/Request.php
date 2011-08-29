@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie
  */
@@ -482,9 +482,11 @@ class Phergie_Event_Request
             }
         }
 
+        $message = 'Argument "' . $argument . '" could not be resolved for' .
+            ' event type "' . $this->type . '"';
+
         throw new Phergie_Event_Exception(
-            'Argument "' . $argument . '" could not be resolved for'
-                . ' event type "' . $this->type . '"',
+            $message,
             Phergie_Event_Exception::ERR_INVALID_ARGUMENT
         );
     }

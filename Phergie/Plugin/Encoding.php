@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Plugin_Encoding
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Plugin_Encoding
  */
@@ -163,7 +163,7 @@ class Phergie_Plugin_Encoding extends Phergie_Plugin_Abstract
      * @return string String with characters transliterated or the original
      *         string if transliteration was not possible
      */
-    public function transliterate($string, $charsetFrom = 'UTF-8', 
+    public function transliterate($string, $charsetFrom = 'UTF-8',
         $charsetTo = 'ISO-8859-1'
     ) {
         // @link http://pecl.php.net/package/translit

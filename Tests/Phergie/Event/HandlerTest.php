@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Tests
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Tests
  */
@@ -170,7 +170,7 @@ class Phergie_Event_HandlerTest extends PHPUnit_Framework_TestCase
         $this->addMockEvent($type, $args);
         $events = $this->events->getEvents();
         $event = array_shift($events);
-        $this->assertType('Phergie_Event_Command', $event);
+        $this->assertInstanceOf('Phergie_Event_Command', $event);
         $this->assertSame($this->plugin, $event->getPlugin());
         $this->assertSame($type, $event->getType());
         $this->assertSame($args, $event->getArguments());

@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Tests
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Tests
  */
@@ -162,6 +162,9 @@ class Phergie_ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testReadThrowsExceptionForUnreadableFile()
     {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->markTestSkipped('chmod() call to make file unreadable useless on windows');
+        }
         $file = $this->createTempFile();
         if (!chmod($file, 0000)) {
             $this->markTestSkipped('chmod() call to make file unreadable failed');
