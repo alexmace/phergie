@@ -39,6 +39,11 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
      */
     protected $http;
 
+	/**
+	 * URL of the Redmine installation.
+	 *
+	 * @var string
+	 */
 	protected $url;
 
     /**
@@ -49,7 +54,10 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
     public function onLoad()
     {
         $this->getPluginHandler()->getPlugin('Http');
-		$this->url = rtrim($this->getConfig('Redmine.url'), '/');
+
+		// Get the URL and strip a slash off the end and then re-append it so
+		// we are 100% sure it is there.
+		$this->url = rtrim($this->getConfig('Redmine.url'), '/') . '/';
     }
 
 	/**
@@ -62,17 +70,20 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 	public function getTicket($ticketNumber)
 	{
 
+		// Construct the URL to get the ticket details.
 		$url = $this->url . '/issues/' . urlencode($ticketNumber) . '.json'
-			 . '?key=' . $this->getConfig('Redmine.key');
+			 . '?key=' . urlencode($this->getConfig('Redmine.key'));
 
+		// Request the content.
 		$content = $this->getPluginHandler()
 			->getPlugin('Http')
 			->get($url)
 			->getContent();
 
+		// If a ticket is found, return the details, otherwise, return false.
 		if (!empty($content->subject)) {
-			return $content->subject .
-				' (' . $this->url . '/issues/' . $ticketNumber . ')';
+			return '#' . $content->id . ': ' . $content->subject .
+				' (URL: ' . $this->url . '/issues/' . $ticketNumber . ')';
 		} else {
 			return false;
 		}
@@ -80,8 +91,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 	}
 
     /**
-     * Parses incoming messages for "Terry Chay" and related variations and
-     * responds with a chayism.
+     * Parses incoming messages for mentions of Redmine related keywords.
      *
      * @return void
      */
