@@ -70,8 +70,12 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 			->get($url)
 			->getContent();
 
-		return $content->subject .
-			' (' . $this->url . '/issues/' . $ticketNumber . ')';
+		if (!empty($content->subject)) {
+			return $content->subject .
+				' (' . $this->url . '/issues/' . $ticketNumber . ')';
+		} else {
+			return false;
+		}
 		
 	}
 
@@ -92,7 +96,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
             '\s*)?.*\#([0-9]+)/';
 
 		if (preg_match($pattern, $message, $matches)) {
-			if ($ticketDetails = $this->getTicket($matches[2])) {
+			if ($ticketDetails = $this->getTicket((int)$matches[2])) {
 				$this->doPrivmsg($source, $ticketDetails);
 			}
 		}
