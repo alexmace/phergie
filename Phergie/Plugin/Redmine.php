@@ -71,7 +71,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 	{
 
 		// Construct the URL to get the ticket details.
-		$url = $this->url . '/issues/' . urlencode($ticketNumber) . '.json'
+		$url = $this->url . 'issues/' . urlencode($ticketNumber) . '.json'
 			 . '?key=' . urlencode($this->getConfig('Redmine.key'));
 
 		// Request the content.
@@ -82,7 +82,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 
 		// If a ticket is found, return the details, otherwise, return false.
 		if (!empty($content->subject)) {
-			return '#' . $content->id . ': ' . $content->subject .
+			return 'Issue ' . $content->id . ': ' . $content->subject .
 				' (URL: ' . $this->url . '/issues/' . $ticketNumber . ')';
 		} else {
 			return false;
