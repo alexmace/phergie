@@ -12,11 +12,11 @@
  * http://phergie.org/license
  *
  * @category  Phergie
- * @package   Phergie_Plugin_TerryChay
+ * @package   Phergie_Plugin_Redmine
  * @author    Phergie Development Team <team@phergie.org>
  * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
- * @link      http://pear.phergie.org/package/Phergie_Plugin_TerryChay
+ * @link      http://pear.phergie.org/package/Phergie_Plugin_Redmine
  */
 
 /**
@@ -26,7 +26,7 @@
  * @package  Phergie_Plugin_Redmine
  * @author   Phergie Development Team <team@phergie.org>
  * @license  http://phergie.org/license New BSD License
- * @link     http://pear.phergie.org/package/Phergie_Plugin_TerryChay
+ * @link     http://pear.phergie.org/package/Phergie_Plugin_Redmine
  * @uses     Phergie_Plugin_Http pear.phergie.org
  */
 class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
@@ -83,7 +83,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 		// If a ticket is found, return the details, otherwise, return false.
 		if (!empty($content->subject)) {
 			return 'Issue ' . $content->id . ': ' . $content->subject .
-				' (URL: ' . $this->url . '/issues/' . $ticketNumber . ')';
+				' (URL: ' . $this->url . 'issues/' . $ticketNumber . ')';
 		} else {
 			return false;
 		}
