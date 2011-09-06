@@ -12,21 +12,21 @@
  * http://phergie.org/license
  *
  * @category  Phergie
- * @package   Phergie
+ * @package   Phergie_Driver_Xmpp
  * @author    Phergie Development Team <team@phergie.org>
  * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
- * @link      http://pear.phergie.org/package/Phergie
+ * @link      http://pear.phergie.org/package/Phergie_Driver_Xmpp
  */
 
 /**
  * Autonomous XMPP event originating from a user or the server.
  *
  * @category Phergie
- * @package  Phergie
+ * @package  Phergie_Driver_Xmpp
  * @author   Phergie Development Team <team@phergie.org>
  * @license  http://phergie.org/license New BSD License
- * @link     http://pear.phergie.org/package/Phergie
+ * @link     http://pear.phergie.org/package/Phergie_Driver_Xmpp
  * @link     http://www.irchelp.org/irchelp/rfc/chapter4.html
  */
 class Phergie_Event_Request_Xmpp

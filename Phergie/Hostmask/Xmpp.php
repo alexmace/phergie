@@ -12,21 +12,21 @@
  * http://phergie.org/license
  *
  * @category  Phergie 
- * @package   Phergie
+ * @package   Phergie_Driver_Xmpp
  * @author    Phergie Development Team <team@phergie.org>
  * @copyright 2008-2010 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
- * @link      http://pear.phergie.org/package/Phergie
+ * @link      http://pear.phergie.org/package/Phergie_Driver_Xmpp
  */
 
 /**
  * Extension of Phergie_Hostmask with Xmpp specific regex.
  *
  * @category Phergie 
- * @package  Phergie
+ * @package  Phergie_Driver_Xmpp
  * @author   Phergie Development Team <team@phergie.org>
  * @license  http://phergie.org/license New BSD License
- * @link     http://pear.phergie.org/package/Phergie
+ * @link     http://pear.phergie.org/package/Phergie_Driver_Xmpp
  */
 class Phergie_Hostmask_Xmpp extends Phergie_Hostmask
 {
