@@ -102,12 +102,15 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
         $message = $event->getText();
 
 		// Pattern to find references to tickets using a #{number} notation
-		$pattern = '/^(' . preg_quote($this->getConfig('command.prefix')) .
-            '\s*)?.*\#([0-9]+)/';
+		$pattern = '/(^' . preg_quote($this->getConfig('command.prefix')) .
+            '\s*)?.*?\#([0-9]+)/';
 
-		if (preg_match($pattern, $message, $matches)) {
-			if ($ticketDetails = $this->getTicket((int)$matches[2])) {
-				$this->doPrivmsg($source, $ticketDetails);
+		// Handle all mentions of tickets.
+		if (preg_match_all($pattern, $message, $matches)) {
+			foreach ($matches[2] as $match) {
+				if ($ticketDetails = $this->getTicket((int)$match)) {
+					$this->doPrivmsg($source, $ticketDetails);
+				}
 			}
 		}
     }
