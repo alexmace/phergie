@@ -42,7 +42,7 @@ class Phergie_Event_Request_Xmpp
 	 * 
      * @var string
      */
-    protected static $regex = '/^([^@]+)@conference([^\/]+)\/?(.*)/';
+    protected static $regex = '/^([^@]+)@(conference|rooms)([^\/]+)\/?(.*)/';
 
     /**
      * Determines whether a given string is a valid XMPP room name.
