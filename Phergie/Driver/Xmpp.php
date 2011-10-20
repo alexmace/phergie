@@ -168,7 +168,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 		$mucs = explode(',', $mucs);
 		
 		foreach ($mucs as $muc) {
-			$this->xmpp->join($muc, $this->getConnection()->getNick());
+			$this->xmpp->join($muc, $this->getConnection()->getNick(), true);
 		}
 	}
 
