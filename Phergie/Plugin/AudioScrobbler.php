@@ -29,10 +29,7 @@
  * Configuration settings:
  * "audioscrobbler.lastfm_api_key":  API given by last.fm (string).
  * "audioscrobbler.librefm_api_key": API key given by libre.fm (string).
- * "audioscrobbler.nick_binding":    Array of IRC nicks (key) to last.fm and 
- *                                   libre.fm user names (value) (array).
  * 
- *
  * @category Phergie
  * @package  Phergie_Plugin_AudioScrobbler
  * @author   Phergie Development Team <team@phergie.org>
