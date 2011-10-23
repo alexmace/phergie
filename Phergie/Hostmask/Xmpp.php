@@ -56,8 +56,6 @@ class Phergie_Hostmask_Xmpp extends Phergie_Hostmask
     {
         if (preg_match(self::$regex, $jid, $match)) {
 			if ($type == 'groupchat') {
-				//var_dump($match);
-				//exit;
 				list(, , $room, $realm, $nick) = $match;
 				$username = '';
 			} else {
