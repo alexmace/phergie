@@ -81,8 +81,8 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 			->getContent();
 
 		// If a ticket is found, return the details, otherwise, return false.
-		if (!empty($content->subject)) {
-			return 'Issue ' . $content->id . ': ' . $content->subject .
+		if (!empty($content->issue->subject)) {
+			return 'Issue ' . $content->issue->id . ': ' . $content->issue->subject .
 				' (URL: ' . $this->url . 'issues/' . $ticketNumber . ')';
 		} else {
 			return false;
