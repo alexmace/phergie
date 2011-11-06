@@ -451,11 +451,24 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			}
 
 			$hostmask = Phergie_Hostmask_Xmpp::fromString($from, $stanza->getType());
+            
+            // One difference between IRC and XMPP is that the server will return  
+            // stanzas the client sends back to client again. For example, if a 
+            // client sends a message to a chat room on the server, the server then
+            // sends the message on to all of the people in the chat room, including
+            // the original sender. Therefore if the message has come from Phergie
+            // we want to stop her responding to her own messages. Most of the time
+            // this is benign when it happens, but the Lart and Dice plugins can 
+            // cause Phergie to get stuck in an infinite loop.
+            if (($stanza->getType() == 'groupchat'  && $hostmask->getNick() == $this->getConnection()->getNick())
+                    || $hostmask->getUsername() == $this->getConnection()->getUsername()) {
+                return null;
+            }
 
 			$event = new Phergie_Event_Request_Xmpp;
 			$event->setType($cmd)
 				  ->setArguments($args)
-				  ->setHostmask($hostmask);
+				  ->setHostmask($hostmask);            
 
 		}
         return $event;
