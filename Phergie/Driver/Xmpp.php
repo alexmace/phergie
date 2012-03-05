@@ -268,7 +268,10 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      */
     public function doPing($nick, $hash)
     {
-		$this->xmpp->ping();
+		// If it is a ping to ourselves, then it is a self ping.
+		if ($nick == $this->getConnection()->getNick()) {
+			$this->xmpp->ping($this->getConnection()->getUsername());
+		}
     }
 
     /**
@@ -425,7 +428,8 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 					if ($stanza->getType() == 'groupchat') {
 						// Get it again because we still want the nickname in
 						// there when processing the actual message...
-						array_unshift($args, array_shift(explode('/', $stanza->getFrom())));
+						$fromParts = explode('/', $stanza->getFrom());
+						array_unshift($args, array_shift($fromParts));
 					} else {
 						array_unshift($args, $from);
 					}
