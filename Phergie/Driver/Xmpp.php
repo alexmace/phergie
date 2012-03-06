@@ -392,6 +392,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 		} else {
 
 			$tag = $this->xmpp->wait();
+			echo 'Tag Received from Xmpp_Connection: ' . $tag . "\n";
 
 			// If there is no tag that means we received nothing from the server
 			// and no event has occured.
