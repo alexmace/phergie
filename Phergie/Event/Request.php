@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2012 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie
  */
@@ -220,8 +220,7 @@ class Phergie_Event_Request
         ),
 
         self::TYPE_PART => array(
-            'channel' => 0,
-            'message' => 1
+            'channel' => 0
         ),
 
         self::TYPE_INVITE => array(

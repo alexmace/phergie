@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Plugin_Php
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2012 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Plugin_Php
  */
@@ -55,7 +55,8 @@ class Phergie_Plugin_Php extends Phergie_Plugin_Abstract
         $this->getPluginHandler()->getPlugin('Command');
 
         try {
-            $this->source = new Phergie_Plugin_Php_Source_Local;
+            $db = $this->findDataFile('functions.db');
+            $this->source = new Phergie_Plugin_Php_Source_Local($db);
         } catch (Phergie_Plugin_Source_Local_Exception $e) {
             $this->fail($e->getMessage());
         }

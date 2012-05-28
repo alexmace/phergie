@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2012 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie
  */
@@ -54,7 +54,7 @@ class Phergie_Ui_Console extends Phergie_Ui_Abstract
     public function __construct()
     {
         $this->enabled = true;
-        $this->format = 'H:i:s';
+        $this->format = '[Y-m-d/H:i:s] ';
     }
 
     /**
