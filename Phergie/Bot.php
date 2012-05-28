@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2012 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie
  */
@@ -286,7 +286,9 @@ class Phergie_Bot
         if (empty($this->ui)) {
             $this->ui = new Phergie_Ui_Console;
             $this->ui->setEnabled($this->getConfig('ui.enabled'));
+            $this->getConfig('ui.format', false) && $this->ui->setFormat($this->getConfig('ui.format'));
         }
+
         return $this->ui;
     }
 

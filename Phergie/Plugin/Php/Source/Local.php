@@ -14,7 +14,7 @@
  * @category  Phergie
  * @package   Phergie_Plugin_Php
  * @author    Phergie Development Team <team@phergie.org>
- * @copyright 2008-2011 Phergie Development Team (http://phergie.org)
+ * @copyright 2008-2012 Phergie Development Team (http://phergie.org)
  * @license   http://phergie.org/license New BSD License
  * @link      http://pear.phergie.org/package/Phergie_Plugin_Php
  */
@@ -53,14 +53,13 @@ class Phergie_Plugin_Php_Source_Local implements Phergie_Plugin_Php_Source
     /**
      * Constructor to initialize the data source.
      *
+     * @param string $path Path to the SQLite database to use
      * @return void
      */
-    public function __construct()
+    public function __construct($path)
     {
-        $path = dirname(__FILE__);
-
         try {
-            $this->database = new PDO('sqlite:' . $path . '/functions.db');
+            $this->database = new PDO('sqlite:' . $path);
             $this->buildDatabase();
             // @todo Modify this to be rethrown as an appropriate
             //       Phergie_Plugin_Exception and handled in Phergie_Plugin_Php
