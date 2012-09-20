@@ -1,0 +1,6 @@
+{
+	"name": "phergie/phergie",
+	"require" {
+		"php": ">=5.3.3"
+	}
+}
