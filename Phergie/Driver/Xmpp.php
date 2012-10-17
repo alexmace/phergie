@@ -19,8 +19,6 @@
  * @link      http://pear.phergie.org/package/Phergie_Driver_Xmpp
  */
 
-require 'Xmpp/Connection.php';
-
 /**
  * Driver that connects to an XMPP server rather than IRC, using an external
  * XMPP library.

@@ -1,6 +1,7 @@
 {
 	"name": "phergie/phergie",
 	"require": {
-		"php": ">=5.3.3"
+		"php": ">=5.3.3",
+		"alexmace/xmpp": ">=1.0.2"
 	}
 }
