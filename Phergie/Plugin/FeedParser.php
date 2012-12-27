@@ -84,9 +84,12 @@ class Phergie_Plugin_FeedParser extends Phergie_Plugin_Abstract
             }
 
             if (!empty($header)) {
-                $this->feed->etag = $header['etag'];
+                $this->feed->etag = NULL;
+                if (isset($header['etag'])) {
+                    $this->feed->etag = $header['etag'];
+                }
                 if (empty($this->feed->updated)) {
-                    // Very dificult to happen,
+                    // Very difficult to happen,
                     // but there are some servers that we can't get any
                     // kind of "last modified time"
                     if (empty($header['last-modified'])) {
@@ -117,7 +120,7 @@ class Phergie_Plugin_FeedParser extends Phergie_Plugin_Abstract
 
             if (!empty($item->title)) {
                 $title = (String)$item->title;
-            } else if (empty($item->title) AND !empty($item->description)) {
+            } elseif (empty($item->title) AND !empty($item->description)) {
                 $title = substr(strip_tags($item->description), 0, 100)."...";
             } else {
                 // Without a title or description, we dont have an item
@@ -127,15 +130,26 @@ class Phergie_Plugin_FeedParser extends Phergie_Plugin_Abstract
             // Try to get the author and updated time from dc namespace
             // (Used on Wordpress and others)
             $namespaces = $item->getNameSpaces(true);
-            $dc = $item->children($namespaces['dc']);
-
-            $author = empty($item->author) ? $dc->creator : $item->author;
-            if (empty($autor)) {
-                $author = 'Unknown';
+            $dc = NULL;
+            if (isset($namespaces['dc'])) {
+                $dc = $item->children($namespaces['dc']);
             }
 
-            $pubDate = empty($item->pubDate) ? $dc->date : $item->pubDate;
-            $link = (String) $item->link;
+            $author = 'Unknown';
+            if (isset($item->author)) {
+                $author = $item->author;
+            } elseif (isset($dc->creator)) {
+                $author = $dc->creator;
+            }
+
+            $pubDate = '01.01.1970';
+            if (isset($item->pubDate)) {
+                $pubDate = $item->pubDate;
+            } elseif (isset($dc->date)) {
+                $pubDate = $dc->date;
+            }
+
+            $link = (string) $item->link;
 
             $ret[] = array(
                 'title'     => $title,
