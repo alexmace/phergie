@@ -19,8 +19,6 @@
  * @link      http://pear.phergie.org/package/Phergie_Driver_Xmpp
  */
 
-require 'Xmpp/Connection.php';
-
 /**
  * Driver that connects to an XMPP server rather than IRC, using an external
  * XMPP library.
@@ -36,31 +34,31 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 
 	/**
 	 * Set whether or not a MOTD event has been faked yet.
-	 * 
-	 * @var boolean 
+	 *
+	 * @var boolean
 	 */
 	protected $fakedMotd = false;
 
 	/**
 	 * Holds the connection to the XMPP server.
-	 * 
-	 * @var Xmpp_Connection 
+	 *
+	 * @var Xmpp_Connection
 	 */
 	protected $xmpp;
 
 	/**
 	 * Establishes an XMPP connection.
-	 * 
+	 *
 	 * This is done in a seperate function mainly to allow for stubbing during
 	 * unit testing.
-	 * 
+	 *
 	 * @param string $username Username to authenticate with.
 	 * @param string $password Password associated with the username.
 	 * @param string $hostname Host name to connect to.
 	 * @param bool   $ssl      Whether or not to use SSL.
 	 * @param int    $port     Port to connect to the server on.
 	 * @param string $resource "Resource" part of the JID to connect with.
-	 * 
+	 *
 	 * @return Xmpp_Connection
 	 */
 	protected function connect($username, $password, $hostname, $ssl, $port, $resource = 'Bot')
@@ -150,7 +148,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
      * @return void
      */
     public function doInvite($nick, $muc)
-    { 
+    {
     }
 
     /**
@@ -166,7 +164,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 	{
 		// Explode the list on the comma and join all of the channels specified
 		$mucs = explode(',', $mucs);
-		
+
 		foreach ($mucs as $muc) {
 			$this->xmpp->join($muc, $this->getConnection()->getNick(), true);
 		}
@@ -258,7 +256,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
     }
 
     /**
-     * Sends a <ping/> tag to the server. The nick and and hash are ignored on 
+     * Sends a <ping/> tag to the server. The nick and and hash are ignored on
 	 * XMPP.
      *
      * @param string $nick User nick
@@ -277,12 +275,15 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
     /**
      * Responds to a server test of client responsiveness.
      *
-     * @param string $daemon Daemon from which the original request originates
+     * @param string $daemon Space separated value of who sent the ping and the
+	 *                       id of the ping.
      *
      * @return void
      */
     public function doPong($daemon)
     {
+		list($to, $id) = explode(' ', $daemon);
+		$this->xmpp->pong($to, $id);
     }
 
     /**
@@ -399,7 +400,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			if (empty($tag)) {
 				return null;
 			}
-			
+
 			// Holding array for the arguments.
 			$args = array();
 
@@ -419,11 +420,11 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 						 */
 						$args[] = $bodies[0]['content'];
 					}
-					
+
 					// Prepend args with source of message so the plugins know
 					// who to send the response to.
-					
-					// If it's a group chat message, we want to strip off the 
+
+					// If it's a group chat message, we want to strip off the
 					// nickname so it doesn't decide that it's a normal message
 					// later.
 					if ($stanza->getType() == 'groupchat') {
@@ -434,17 +435,21 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 					} else {
 						array_unshift($args, $from);
 					}
-					
+
 					break;
 
 				case 'presence':
 					unset($cmd);
 					break;
-				
+
 				case 'iq':
 					$stanza = $this->xmpp->getIq();
 					$from = $stanza->getFrom();
-					$cmd = 'pong';
+					// Assemble these together. Phergie will think it is the
+					// IRC daemon sending the ping, but we'll handle it in the
+					// necessary way to be able to respond to the XMPP ping.
+					$args[] = $from . ' ' . $stanza->getId();
+					$cmd = 'ping';
 					break;
 
 				default:
@@ -456,14 +461,14 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			}
 
 			$hostmask = Phergie_Hostmask_Xmpp::fromString($from, $stanza->getType());
-            
-            // One difference between IRC and XMPP is that the server will return  
-            // stanzas the client sends back to client again. For example, if a 
+
+            // One difference between IRC and XMPP is that the server will return
+            // stanzas the client sends back to client again. For example, if a
             // client sends a message to a chat room on the server, the server then
             // sends the message on to all of the people in the chat room, including
             // the original sender. Therefore if the message has come from Phergie
             // we want to stop her responding to her own messages. Most of the time
-            // this is benign when it happens, but the Lart and Dice plugins can 
+            // this is benign when it happens, but the Lart and Dice plugins can
             // cause Phergie to get stuck in an infinite loop.
             if (($stanza->getType() == 'groupchat'  && $hostmask->getNick() == $this->getConnection()->getNick())
                     || $hostmask->getUsername() == $this->getConnection()->getUsername()) {
@@ -473,7 +478,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			$event = new Phergie_Event_Request_Xmpp;
 			$event->setType($cmd)
 				  ->setArguments($args)
-				  ->setHostmask($hostmask);            
+				  ->setHostmask($hostmask);
 
 		}
         return $event;
