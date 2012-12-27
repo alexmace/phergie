@@ -110,7 +110,7 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 			$ssl = true;
 		}
 
-		$this->xmpp = $this->connect($username, $password, $hostname, $ssl, $port);
+		$this->xmpp = $this->connect($username, $password, $hostname, $ssl, $port, $nick);
 
         if (!$this->xmpp) {
             throw new Phergie_Driver_Exception(
