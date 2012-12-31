@@ -171,7 +171,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 
 		// Handle all mentions of tickets.
 		if (preg_match_all($pattern, $message, $matches)) {
-			foreach ($matches[2] as $match) {
+			foreach ($matches[1] as $match) {
 				if ($ticketDetails = $this->getTicket((int)$match)) {
 					$this->doPrivmsg($source, $ticketDetails);
 				}
