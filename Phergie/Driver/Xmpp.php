@@ -412,7 +412,10 @@ class Phergie_Driver_Xmpp extends Phergie_Driver_Abstract
 					$from = $stanza->getFrom();
 					$bodies = $stanza->getBodies();
 
-					if (count($bodies) > 0) {
+					// Only bother dealing with the message if it has at least
+					// one body and is not delayed (since XMPP servers can send
+					// previous messages when you join a room).
+					if (count($bodies) > 0 && !$stanza->isDelayed()) {
 						$cmd = 'privmsg';
 						/**
 						 * @todo There may be more than one body. Should
