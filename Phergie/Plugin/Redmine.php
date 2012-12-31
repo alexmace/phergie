@@ -158,14 +158,14 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
      *
      * @return void
      */
-    public function onPrivmsg($command)
+    public function onPrivmsg()
     {
         $event = $this->getEvent();
         $source = $event->getSource();
         $message = $event->getText();
 
 		// Only do this if the message is not an "assign" message.
-		if (strtolower($command) != 'assign') {
+		if (strpos(strtolower($message), 'assign') !== 0) {
 			
 			// Pattern to find references to tickets using a #{number} notation
 			$pattern = '/(^' . preg_quote($this->getConfig('command.prefix')) .
