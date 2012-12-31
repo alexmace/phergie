@@ -165,7 +165,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
         $message = $event->getText();
 
 		// Only do this if the message is not an "assign" message.
-		if (strpos(strtolower($message), 'assign') !== 0) {
+		if (stripos(strtolower($message), 'assign') !== 0) {
 			
 			// Pattern to find references to tickets using a #{number} notation
 			$pattern = '/(^' . preg_quote($this->getConfig('command.prefix')) .
@@ -173,7 +173,7 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
 
 			// Handle all mentions of tickets.
 			if (preg_match_all($pattern, $message, $matches)) {
-				foreach ($matches[1] as $match) {
+				foreach ($matches[2] as $match) {
 					if ($ticketDetails = $this->getTicket((int)$match)) {
 						$this->doPrivmsg($source, $ticketDetails);
 					}
