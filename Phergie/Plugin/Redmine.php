@@ -158,23 +158,27 @@ class Phergie_Plugin_Redmine extends Phergie_Plugin_Abstract
      *
      * @return void
      */
-    public function onPrivmsg()
+    public function onPrivmsg($command)
     {
         $event = $this->getEvent();
         $source = $event->getSource();
         $message = $event->getText();
 
-		// Pattern to find references to tickets using a #{number} notation,
-		// but ignore messages that start with 'assign' because that is command
-		// that will be handled by this plugin.
-		$pattern = '/^(?!assign).*?\#([0-9]+)/';
+		// Only do this if the message is not an "assign" message.
+		if (strtolower($command) != 'assign') {
+			
+			// Pattern to find references to tickets using a #{number} notation
+			$pattern = '/(^' . preg_quote($this->getConfig('command.prefix')) .
+				'\s*)?.*?\#([0-9]+)/';
 
-		// Handle all mentions of tickets.
-		if (preg_match_all($pattern, $message, $matches)) {
-			foreach ($matches[1] as $match) {
-				if ($ticketDetails = $this->getTicket((int)$match)) {
-					$this->doPrivmsg($source, $ticketDetails);
+			// Handle all mentions of tickets.
+			if (preg_match_all($pattern, $message, $matches)) {
+				foreach ($matches[1] as $match) {
+					if ($ticketDetails = $this->getTicket((int)$match)) {
+						$this->doPrivmsg($source, $ticketDetails);
+					}
 				}
+			
 			}
 		}
     }
