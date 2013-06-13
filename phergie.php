@@ -27,7 +27,7 @@ require 'Phergie/Autoload.php';
 Phergie_Autoload::registerAutoloader();
 
 // If some packages have been installed with composer, setup their autoloader
-// in the standar way.
+// in the standard way.
 if (file_exists('vendor/autoload.php')) {
 	include 'vendor/autoload.php';
 }
