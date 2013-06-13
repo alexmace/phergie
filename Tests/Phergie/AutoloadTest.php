@@ -22,6 +22,8 @@
 defined('PHERGIE_BASE_PATH') or define('PHERGIE_BASE_PATH',
                 dirname(dirname(dirname(__FILE__))));
 
+require_once 'PHPUnit/Runner/Version.php';
+require_once 'PHPUnit/Framework/Constraint/TraversableContains.php';
 require_once PHERGIE_BASE_PATH . '/Phergie/Autoload.php';
 
 /**
