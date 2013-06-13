@@ -29,13 +29,9 @@
  * Configuration settings:
  * "audioscrobbler.lastfm_api_key":  API given by last.fm (string).
  * "audioscrobbler.librefm_api_key": API key given by libre.fm (string).
-<<<<<<< HEAD
- * "audioscrobbler.nick_binding":    Array of IRC nicks (key) to last.fm and 
+ * "audioscrobbler.nick_binding":    Array of IRC nicks (key) to last.fm and
  *                                   libre.fm user names (value) (array).
- * 
-=======
  *
->>>>>>> upstream/master
  * @category Phergie
  * @package  Phergie_Plugin_AudioScrobbler
  * @author   Phergie Development Team <team@phergie.org>
@@ -138,7 +134,7 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
     public function getScrobbled($user, $url, $key)
     {
         $event = $this->getEvent();
-        
+
         // Handle nick-binding.
         $nick_binding = $this->getConfig('audioscrobbler.nick_binding', null);
         if ($user === null && !empty($nick_binding[$event->getNick()])) {
@@ -146,7 +142,7 @@ class Phergie_Plugin_AudioScrobbler extends Phergie_Plugin_Abstract
         } else {
             $user = $user ? $user : $event->getNick();
         }
-        
+
         $url = sprintf($url . $this->query, urlencode($user), urlencode($key));
         $response = $this->http->get($url);
         if ($response->isError()) {
