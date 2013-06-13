@@ -25,9 +25,9 @@
  *
  * @link http://github.com/scoates/simpletweet
  */
-require dirname(__FILE__) . '/Twitter/twitter.class.php';
+/*require dirname(__FILE__) . '/Twitter/twitter.class.php';
 require dirname(__FILE__) . '/Twitter/laconica.class.php';
-
+*/
 /**
  * Fetches tweets from Twitter.
  *
@@ -77,7 +77,13 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
      */
     public function onLoad()
     {
-        if (!extension_loaded('oauth')) {
+		$twitter = new Endroid\Twitter\Twitter(
+			$this->config['twitter.consumerkey'],
+			$this->config['twitter.consumersecret'],
+			$this->config['twitter.usertoken'],
+			$this->config['twitter.usersecret']);
+		$this->setTwitter($twitter);
+/*        if (!extension_loaded('oauth')) {
             $this->fail('PECL oauth extension not installed');
         }
 
@@ -110,7 +116,7 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
           $this->getConfig('twitter.usertoken', 'Twitter'),
           $this->getConfig('twitter.usersecret', 'Twitter')
         );
-        $this->twitter->oauth = $tw_oauth;
+        $this->twitter->oauth = $tw_oauth;*/
     }
 
     /**
