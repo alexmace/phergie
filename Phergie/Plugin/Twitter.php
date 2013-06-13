@@ -43,7 +43,9 @@
 class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 {
     /**
-     * Twitter object (from Simpletweet)
+     * Twitter object
+	 *
+	 * @var Endroid\Twitter\Twitter
      */
     protected $twitter;
 
