@@ -30,3 +30,9 @@ if (version_compare($version, '3.5.0', '<')) {
 // Phergie components require Phergie_Autoload to function correctly.
 require_once dirname(__FILE__) . '/../Phergie/Autoload.php';
 Phergie_Autoload::registerAutoloader();
+
+// If some packages have been installed with composer, setup their autoloader
+// in the standard way.
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+	include __DIR__ . '/../vendor/autoload.php';
+}
