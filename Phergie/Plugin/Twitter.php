@@ -75,40 +75,10 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 			$this->config['twitter.usertoken'],
 			$this->config['twitter.usersecret']);
 		$this->setTwitter($twitter);
-/*        if (!extension_loaded('oauth')) {
-            $this->fail('PECL oauth extension not installed');
-        }
-
-        $twitterClass = $this->getConfig('twitter.class', 'Twitter');
-
-        $this->setTwitter(
-            new $twitterClass(
-                $this->config['twitter.user'],
-                $this->config['twitter.password'],
-                $this->config['twitter.url'],
-                $this->config['twitter.usertoken'],
-                $this->config['twitter.usersecret'],
-                $this->config['twitter.consumerkey'],
-                $this->config['twitter.consumersecret']
-              )
-            );
 
         $plugins = $this->getPluginHandler();
         $plugins->getPlugin('Encoding');
         $plugins->getPlugin('Time');
-        //Attempt OAUTH negotiation
-        $tw_oauth = new OAuth(
-          $this->getConfig('twitter.consumerkey', 'Twitter'),
-          $this->getConfig('twitter.consumersecret', 'Twitter'),
-           OAUTH_SIG_METHOD_HMACSHA1,
-           OAUTH_AUTH_TYPE_URI
-        );
-          //User-specific credentials
-        $tw_oauth->setToken(
-          $this->getConfig('twitter.usertoken', 'Twitter'),
-          $this->getConfig('twitter.usersecret', 'Twitter')
-        );
-        $this->twitter->oauth = $tw_oauth;*/
     }
 
     /**
