@@ -26,6 +26,12 @@
 require 'Phergie/Autoload.php';
 Phergie_Autoload::registerAutoloader();
 
+// If some packages have been installed with composer, setup their autoloader
+// in the standar way.
+if (file_exists('vendor/autoload.php')) {
+	include 'vendor/autoload.php';
+}
+
 $bot = new Phergie_Bot;
 
 if (!isset($argc)) {
