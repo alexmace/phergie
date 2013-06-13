@@ -1,2 +1,4 @@
 Settings.php
 *.db
+nbproject
+vendor
