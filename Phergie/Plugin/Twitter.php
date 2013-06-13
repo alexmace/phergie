@@ -20,15 +20,6 @@
  */
 
 /**
- * These requires are for library code, so they don't fit Autoload's normal
- * conventions.
- *
- * @link http://github.com/scoates/simpletweet
- */
-/*require dirname(__FILE__) . '/Twitter/twitter.class.php';
-require dirname(__FILE__) . '/Twitter/laconica.class.php';
-*/
-/**
  * Fetches tweets from Twitter.
  *
  * Usage:
@@ -122,11 +113,11 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
     /**
      * Sets the Twitter client instance to use.
      *
-     * @param Twitter $twitter Twitter instance to set
+     * @param Endroid\Twitter\Twitter $twitter Twitter instance to set
      *
      * @return Phergie_Plugin_Twitter Provides a fluent interface
      */
-    public function setTwitter(Twitter $twitter)
+    public function setTwitter(Endroid\Twitter\Twitter $twitter)
     {
         $this->twitter = $twitter;
         return $this;
@@ -135,7 +126,7 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
     /**
      * Returns the Twitter client instance in use.
      *
-     * @return Twitter Twitter client instance
+     * @return Endroid\Twitter\Twitter Twitter client instance
      */
     public function getTwitter()
     {
@@ -158,22 +149,20 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
         $source = $this->getEvent()->getSource();
         $nick = $this->getEvent()->getHostmask()->getNick();
         if (is_numeric($tweeter)) {
-            $tweet = $this->twitter->getTweetByNum($tweeter);
-
+            $tweet = $this->getTweetByNum($tweeter);
         } else if (is_null($tweeter) && $this->twitteruser) {
-            $tweet = $this->twitter->getLastTweet($this->twitteruser, 1);
-
+            $tweet = $this->getLastTweet($this->twitteruser, 1);
         } else if (preg_match('/^https?:\/\/(www\.)?twitter\.com/i', $tweeter)) {
             if (stripos($tweeter, 'status') !== false) {
                 $tweeter = preg_replace('/[^\d]+([\d]+$)/i', '\1', $tweeter);
-                $tweet = $this->twitter->getTweetByNum($tweeter);
+                $tweet = $this->getTweetByNum($tweeter);
             } else {
                 $twit = explode('/', rtrim($tweeter, '/'));
                 $tweeter = array_pop($twit);
-                $tweet = $this->twitter->getLastTweet(ltrim($tweeter, '@'), $num);
+                $tweet = $this->getLastTweet(ltrim($tweeter, '@'), $num);
             }
         } else {
-            $tweet = $this->twitter->getLastTweet(ltrim($tweeter, '@'), $num);
+            $tweet = $this->getLastTweet(ltrim($tweeter, '@'), $num);
         }
 
         if ($tweet) {
@@ -214,7 +203,8 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
             . preg_replace('/\s+/', ' ', $tweet->text)
             . ' - ' . $ts . ' ago';
         if ($includeUrl) {
-            $out .= ' (' . $this->twitter->getUrlOutputStatus($tweet) . ')';
+            $out .= ' (' . 'https://twitter.com/'. urlencode($tweet->user->screen_name)
+            . '/statuses/' . urlencode($tweet->id_str) . ')';
         }
 
         $encode = $this->getPluginHandler()->getPlugin('Encoding');
@@ -243,7 +233,7 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 
         if (preg_match('#/status(es)?/([0-9]+)$#', $path, $matches)
         ) {
-            $tweet = $this->twitter->getTweetByNum($matches[2]);
+            $tweet = $this->getTweetByNum($matches[2]);
             if ($tweet) {
                 $this->doPrivmsg($source, $this->formatTweet($tweet, false));
             }
@@ -253,4 +243,26 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
         // if we get this far, we haven't satisfied the URL, so bail:
         return false;
     }
+
+	public function getTweetByNum($num)
+	{
+		return json_decode(
+			$this->twitter->query(
+				'statuses/show', 'GET', 'json', array('id' => $num))->getContent());
+	}
+
+	public function getLastTweet($tweeter, $num = 1)
+	{
+		$source = $this->twitter->getTimeline(array('screen_name' => $tweeter));
+
+		if ($num > count($source)) {
+			return false;
+		}
+		$tweet = $source[$num - 1];
+		if (!isset($tweet->user->screen_name) || !$tweet->user->screen_name) {
+			return false;
+		}
+		return $tweet;
+	}
+
 }
