@@ -28,23 +28,8 @@
  * @license  http://phergie.org/license New BSD License
  * @link     http://pear.phergie.org/package/Phergie_Tests
  */
-class Phergie_Plugin_TwitterTest extends Phergie_Plugin_TestCase
+abstract class Phergie_Plugin_TwitterTest extends Phergie_Plugin_TestCase
 {
-
-	/**
-	 * Setup the config required for the Twitter class.
-	 *
-	 * @return void
-	 */
-	public function setup()
-	{
-		$this->setConfig('twitter.consumerkey', 'consumerkey');
-		$this->setConfig('twitter.consumersecret', 'consumersecret');
-		$this->setConfig('twitter.usertoken', 'usertoken');
-		$this->setConfig('twitter.usersecret', 'usersecret');
-		parent::setup();
-	}
-
     /**
      * Tests for appropriate plugin requirements.
      *
@@ -52,6 +37,7 @@ class Phergie_Plugin_TwitterTest extends Phergie_Plugin_TestCase
      */
     public function testPluginRequirements()
     {
+        $this->assertRequiresPlugin('Url');
         $this->assertRequiresPlugin('Encoding');
         $this->assertRequiresPlugin('Time');
         $this->plugin->onLoad();
@@ -65,7 +51,6 @@ class Phergie_Plugin_TwitterTest extends Phergie_Plugin_TestCase
      */
     public function testTwitterClass()
     {
-		$this->plugin->onLoad();
-        $this->assertInstanceOf('Endroid\Twitter\Twitter', $this->plugin->getTwitter());
+        $this->assertInstanceOf('Twitter', $this->plugin->getTwitter());
     }
 }
