@@ -1,0 +1,7 @@
+{
+	"name": "phergie/phergie",
+	"require": {
+		"php": ">=5.3.3",
+		"endroid/twitter": ">=1.1.0"
+	}
+}
