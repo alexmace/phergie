@@ -143,6 +143,13 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
         }
     }
 
+	/**
+	 * Sends a tweet from Phergie, and outputs it back to the channel.
+	 *
+	 * @param string $tweet Tweet to be sent.
+	 *
+	 * @return void
+	 */
     public function onCommandTweet($tweet = null){
       $source = $this->getEvent()->getSource();
       $nick =  $this->getEvent()->getHostmask()->getNick();
@@ -153,11 +160,7 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
         $this->doPrivmsg($source, "Sorry, $nick, your tweet failed to send.");
       }
     }
-
-
-
-
-
+	
     /**
      * Formats a Tweet into a message suitable for output.
      *
