@@ -146,7 +146,7 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
     public function onCommandTweet($tweet = null){
       $source = $this->getEvent()->getSource();
       $nick =  $this->getEvent()->getHostmask()->getNick();
-      $tweetresponse = $this->twitter->sendTweet($tweet);
+      $tweetresponse = $this->sendTweet($tweet);
       if($tweetresponse){
         $this->doPrivmsg($source, $this->formatTweet($tweetresponse, false));
       }else{
@@ -234,6 +234,16 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 			return false;
 		}
 		return $tweet;
+	}
+
+	public function sendTweet($txt)
+	{
+		$txt = substr($txt, 0, 140);
+
+		$response = json_decode($this->twitter->query(
+			'statuses/update', 'POST', 'json', array('status' => $txt))->getContent());
+
+		return $this->getTweetByNum($response->id);
 	}
 
 }
