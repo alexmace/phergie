@@ -39,12 +39,13 @@
  * @link     http://pear.phergie.org/package/Phergie_Plugin_Twitter
  * @uses     Phergie_Plugin_Time pear.phergie.org
  * @uses     Phergie_Plugin_Encoding pear.phergie.org
- * @uses     extension oauth
  */
 class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 {
     /**
-     * Twitter object (from Simpletweet)
+     * Twitter object
+	 *
+	 * @var Endroid\Twitter\Twitter
      */
     protected $twitter;
 
