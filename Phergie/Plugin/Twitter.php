@@ -160,7 +160,7 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
         $this->doPrivmsg($source, "Sorry, $nick, your tweet failed to send.");
       }
     }
-	
+
     /**
      * Formats a Tweet into a message suitable for output.
      *
@@ -218,6 +218,13 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
         return false;
     }
 
+	/**
+     * Fetches a tweet by its number/id
+     *
+     * @param int $num the tweet id/number
+     *
+     * @return string (null on failure)
+     */
 	public function getTweetByNum($num)
 	{
 		return json_decode(
@@ -225,6 +232,14 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 				'statuses/show', 'GET', 'json', array('id' => $num))->getContent());
 	}
 
+	/**
+     * Reads [last] tweet from user
+     *
+     * @param string $tweeter the tweeter username
+     * @param int    $num     this many tweets ago (1 = current tweet)
+     *
+     * @return string (false on failure)
+     */
 	public function getLastTweet($tweeter, $num = 1)
 	{
 		$source = $this->twitter->getTimeline(array('screen_name' => $tweeter));
@@ -239,6 +254,13 @@ class Phergie_Plugin_Twitter extends Phergie_Plugin_Abstract
 		return $tweet;
 	}
 
+	/**
+     * Sends a tweet
+     *
+     * @param string $txt the tweet text to send
+     *
+     * @return Posted tweet.
+     */
 	public function sendTweet($txt)
 	{
 		$txt = substr($txt, 0, 140);
