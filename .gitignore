@@ -2,3 +2,4 @@ Settings.php
 *.db
 nbproject
 vendor/
+.idea
