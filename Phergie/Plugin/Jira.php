@@ -173,7 +173,7 @@ class Phergie_Plugin_Jira extends Phergie_Plugin_Abstract
 			
 		// Pattern to find references to tickets using a #{number} notation
 		$pattern = '/(^' . preg_quote($this->getConfig('command.prefix')) .
-			'\s*)?[^\/]*?([A-Z]+-[0-9]+)/';
+			'\s*)?.*?((?<!\/browse\/)[A-Z]+-[0-9]+)/';
 
 		// Handle all mentions of tickets.
 		if (preg_match_all($pattern, $message, $matches)) {
